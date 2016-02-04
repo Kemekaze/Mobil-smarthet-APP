@@ -1,8 +1,15 @@
 package dat065.mobil_smarthet;
 
+import android.app.AlertDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.content.DialogInterface;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.view.ContextThemeWrapper;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,9 +19,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.animation.AnimationUtils;
+import android.widget.PopupWindow;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private BluetoothAdapter bluetoothAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +34,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -40,6 +54,27 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        //Check if bluetooth is on, else alert and ask if user want to start
+        if(!isBluetoothEnabled()){
+            final AlertDialog bluetoothDialog;
+            final AlertDialog.Builder bluetoothDialogBuilder = new AlertDialog.Builder(this);
+                    bluetoothDialogBuilder.setTitle("Bluetooth felmeddelande")
+                    .setMessage("Du måste aktivera bluetooth för att hämta data. Vill du aktivera?")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            bluetoothAdapter.enable(); //this crashes on computer, no bluetooth
+                                                        //on fake phone
+                        }
+                    }).setIcon(android.R.drawable.ic_dialog_alert)
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    });
+            bluetoothDialog = bluetoothDialogBuilder.create();
+            bluetoothDialog.getWindow().getAttributes().windowAnimations = R.style.dialog_animation;
+            bluetoothDialog.show();
+        }
     }
 
     @Override
@@ -97,5 +132,13 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public boolean isBluetoothEnabled(){
+
+        if(bluetoothAdapter==null){
+            return false;
+        }
+        return bluetoothAdapter.isEnabled();
     }
 }
