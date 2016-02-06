@@ -134,6 +134,10 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * Boolean method to check if bluetooth is on or off.
+     * @return true if bluetooth is on, false if it is off or non-existent.
+     */
     public boolean isBluetoothEnabled(){
 
         if(bluetoothAdapter==null){
