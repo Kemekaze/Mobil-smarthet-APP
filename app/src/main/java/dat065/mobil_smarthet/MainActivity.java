@@ -21,12 +21,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private BluetoothAdapter bluetoothAdapter;
+    private Button synchButton, hisButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,17 +37,10 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        //New implementation
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        synchButton = (Button) findViewById(R.id.synch_button);
+        hisButton = (Button) findViewById(R.id.his_button);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -54,27 +50,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        //Check if bluetooth is on, else alert and ask if user want to start
-        if(!isBluetoothEnabled()){
-            final AlertDialog bluetoothDialog;
-            final AlertDialog.Builder bluetoothDialogBuilder = new AlertDialog.Builder(this);
-                    bluetoothDialogBuilder.setTitle("Bluetooth felmeddelande")
-                    .setMessage("Du måste aktivera bluetooth för att hämta data. Vill du aktivera?")
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            bluetoothAdapter.enable(); //this crashes on computer, no bluetooth
-                                                        //on fake phone
-                        }
-                    }).setIcon(android.R.drawable.ic_dialog_alert)
-                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
-                    });
-            bluetoothDialog = bluetoothDialogBuilder.create();
-            bluetoothDialog.getWindow().getAttributes().windowAnimations = R.style.dialog_animation;
-            bluetoothDialog.show();
-        }
+        checkBluetooth();
     }
 
     @Override
@@ -114,18 +90,19 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        if (id == R.id.nav_temperature) {
+            setTitle("Temperature");
+        } else if (id == R.id.nav_sound) {
+            setTitle("Sound");
 
-        if (id == R.id.nav_camara) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_light) {
+            setTitle("Light");
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_accelerometer) {
+            setTitle("Accelerometer");
 
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_alarm) {
+            setTitle("Alarm");
 
         }
 
@@ -140,5 +117,47 @@ public class MainActivity extends AppCompatActivity
             return false;
         }
         return bluetoothAdapter.isEnabled();
+    }
+
+    /**
+     * Sets the actionbar title to the specific title
+     *
+     * @param title     the title to set
+     */
+    public void setTitle(String title) {
+        getSupportActionBar().setTitle(title);
+    }
+
+    public void buttonClick(View v) {
+        if(v.getId() == R.id.synch_button) {
+
+        }
+        else if(v.getId() == R.id.his_button) {
+            Toast.makeText(this, "History button was clicked", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void checkBluetooth() {
+        //Check if bluetooth is on, if not alert and ask if user want to start
+        if(!isBluetoothEnabled()){
+            final AlertDialog bluetoothDialog;
+            final AlertDialog.Builder bluetoothDialogBuilder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
+            bluetoothDialogBuilder.setTitle("Bluetooth felmeddelande")
+                    .setMessage("Du måste aktivera bluetooth för att hämta data. Vill du aktivera?")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            bluetoothAdapter.enable(); //this crashes on computer, no bluetooth
+                            //on fake phone
+                        }
+                    }).setIcon(android.R.drawable.ic_dialog_alert)
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            bluetoothDialog = bluetoothDialogBuilder.create();
+            bluetoothDialog.getWindow().getAttributes().windowAnimations = R.style.dialog_animation;
+            bluetoothDialog.show();
+        }
     }
 }

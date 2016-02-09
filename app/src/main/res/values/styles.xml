@@ -19,4 +19,10 @@
         <item name="android:windowExitAnimation">@anim/translate_right_side</item>
     </style>
 
+    <style name="AppCompatAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">#FFFFFF</item>
+        <item name="android:background">@color/colorPrimary</item>
+    </style>
+
 </resources>

@@ -1,23 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
-        <item android:id="@+id/nav_camara" android:icon="@android:drawable/ic_menu_camera"
-            android:title="Import" />
-        <item android:id="@+id/nav_gallery" android:icon="@android:drawable/ic_menu_gallery"
-            android:title="Gallery" />
-        <item android:id="@+id/nav_slideshow" android:icon="@android:drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
-        <item android:id="@+id/nav_manage" android:icon="@android:drawable/ic_menu_manage"
-            android:title="Tools" />
-    </group>
-
-    <item android:title="Communicate">
+    <item android:title="Sensors">
         <menu>
-            <item android:id="@+id/nav_share" android:icon="@android:drawable/ic_menu_share"
-                android:title="Share" />
-            <item android:id="@+id/nav_send" android:icon="@android:drawable/ic_menu_send"
-                android:title="Send" />
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_temperature"
+                    android:icon="@android:drawable/ic_menu_camera"
+                    android:title="Temperature" />
+                <item
+                    android:id="@+id/nav_sound"
+                    android:icon="@drawable/ic_surround_sound_black_48dp"
+                    android:title="Sound" />
+                <item
+                    android:id="@+id/nav_light"
+                    android:icon="@drawable/ic_lightbulb_outline_black_48dp"
+                    android:title="Light" />
+                <item
+                    android:id="@+id/nav_accelerometer"
+                    android:icon="@android:drawable/ic_menu_manage"
+                    android:title="Accelerometer" />
+            </group>
+        </menu>
+    </item>
+
+    <item android:title="Other">
+        <menu>
+            <item
+                android:id="@+id/nav_alarm"
+                android:icon="@drawable/ic_alarm_black_48dp"
+                android:title="Alarm" />
         </menu>
     </item>
 
