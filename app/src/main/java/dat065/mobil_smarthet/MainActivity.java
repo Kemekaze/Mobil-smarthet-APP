@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity
                     .setMessage("Du måste aktivera bluetooth för att hämta data. Vill du aktivera?")
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            //bluetoothAdapter.enable(); //this crashes on computer, no bluetooth
+                            bluetoothAdapter.enable(); //this crashes on computer, no bluetooth
                                                         //on fake phone
                         }
                     }).setIcon(android.R.drawable.ic_dialog_alert)
