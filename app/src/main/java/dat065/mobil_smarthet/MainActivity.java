@@ -29,7 +29,6 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private BluetoothAdapter bluetoothAdapter;
-    private Button synchButton, hisButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +38,6 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         //New implementation
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        synchButton = (Button) findViewById(R.id.synch_button);
-        hisButton = (Button) findViewById(R.id.his_button);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -128,28 +125,19 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().setTitle(title);
     }
 
-    public void buttonClick(View v) {
-        if(v.getId() == R.id.synch_button) {
-
-        }
-        else if(v.getId() == R.id.his_button) {
-            Toast.makeText(this, "History button was clicked", Toast.LENGTH_SHORT).show();
-        }
-    }
-
     public void checkBluetooth() {
         //Check if bluetooth is on, if not alert and ask if user want to start
         if(!isBluetoothEnabled()){
             final AlertDialog bluetoothDialog;
             final AlertDialog.Builder bluetoothDialogBuilder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
-            bluetoothDialogBuilder.setTitle("Bluetooth felmeddelande")
-                    .setMessage("Du måste aktivera bluetooth för att hämta data. Vill du aktivera?")
+            bluetoothDialogBuilder.setTitle("Bluetooth error message")
+                    .setMessage("You have to activate bluetooth to synchronize data, would yo like to do it now?")
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            bluetoothAdapter.enable(); //this crashes on computer, no bluetooth
-                            //on fake phone
-                        }
-                    }).setIcon(android.R.drawable.ic_dialog_alert)
+                        //this crashes on computer, no bluetooth on emulator phone
+                        bluetoothAdapter.enable();
+                    }
+                    }).setIcon(R.drawable.ic_error_outline_black_48dp)
                     .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
