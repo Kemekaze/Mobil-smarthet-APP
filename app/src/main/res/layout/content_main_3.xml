@@ -12,20 +12,17 @@
         android:orientation="horizontal"
         android:layout_weight="1">
 
-        <Button
+
+        <include layout="@layout/sensor_layout_one"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="Button 1"
-            android:id="@+id/button1"
             android:layout_weight="1"/>
 
-        <Button
+        <include layout="@layout/sensor_layout_two"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="Button 2"
-            android:id="@+id/button2"
-            android:layout_alignParentTop="true"
             android:layout_weight="1"/>
+
     </LinearLayout>
 
     <LinearLayout

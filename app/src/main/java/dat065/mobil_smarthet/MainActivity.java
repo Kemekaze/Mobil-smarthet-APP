@@ -7,6 +7,8 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Display;
 import android.view.Gravity;
@@ -22,13 +24,23 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private BluetoothAdapter bluetoothAdapter;
+    private boolean tempBool=false,lightBool=false,accBool=false, soundBool=false;
+    private int nrFavoriteSensors = 0;
+
+    private LinearLayout favoriteOne;
+    private TextView favoriteOneText;
+
+    private LinearLayout favoriteTwo;
+    private TextView favoriteTwoText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +51,12 @@ public class MainActivity extends AppCompatActivity
         //New implementation
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
+        favoriteOne = (LinearLayout) findViewById(R.id.sensorLayoutOne);
+        favoriteOneText = (TextView) favoriteOne.findViewById(R.id.sensorTextOne);
+        favoriteTwo = (LinearLayout) findViewById(R.id.sensorLayoutTwo);
+        favoriteTwoText = (TextView) favoriteTwo.findViewById(R.id.sensorTextTwo);
+
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -47,6 +65,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setItemIconTintList(null);
         checkBluetooth();
     }
 
@@ -64,6 +83,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
         return true;
     }
 
@@ -75,9 +95,6 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -87,6 +104,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+
         if (id == R.id.nav_temperature) {
             setTitle("Temperature");
         } else if (id == R.id.nav_sound) {
@@ -102,12 +120,76 @@ public class MainActivity extends AppCompatActivity
             setTitle("Alarm");
 
         }
+        /*
+        //This code makes me scared. Will remake later on when other things are done.
+        //Maybe remake them into typeless object and insert sensor object when correct one is chosen.
+         */
+        nrFavoriteSensors = nrFavoriteSensors>2 ? 2 : nrFavoriteSensors;
+        nrFavoriteSensors = nrFavoriteSensors<0 ? 0 : nrFavoriteSensors;
+        switch (id){
+            case R.id.tempFav:
+                if(!tempBool){
+                    if(nrFavoriteSensors==2){Toast.makeText(getApplication().getApplicationContext(),"You can't have more than 2 favorized sensors!", Toast.LENGTH_SHORT).show(); break;}
+                    item.setIcon(R.drawable.switch_on);
+                    tempBool=true;
+                    if(favoriteOneText.getText().toString().contains("Unset")){favoriteOneText.setText("DATA"+" Celsius");} else if(favoriteTwoText.getText().toString().contains("Unset")){favoriteTwoText.setText("DATA"+" Celsius");}
+                    nrFavoriteSensors++;
+                }else{
+                    item.setIcon(R.drawable.switch_off);
+                    tempBool=false;
+                    nrFavoriteSensors--;
+                    if(favoriteOneText.getText().toString().contains("Celsius")){favoriteOneText.setText("Unset");} else if(favoriteTwoText.getText().toString().contains("Celsius")){favoriteTwoText.setText("Unset");}
+                }
+                break;
+            case R.id.soundFav:
+                if(!soundBool){
+                    if(nrFavoriteSensors==2){Toast.makeText(getApplication().getApplicationContext(),"You can't have more than 2 favorized sensors!", Toast.LENGTH_SHORT).show(); break;}
+                    item.setIcon(R.drawable.switch_on);
+                    soundBool=true;
+                    if(favoriteOneText.getText().toString().contains("Unset")){favoriteOneText.setText("DATA"+" dB");} else if(favoriteTwoText.getText().toString().contains("Unset")){favoriteTwoText.setText("DATA"+" dB");}
+                    nrFavoriteSensors++;
+                }else{
+                    item.setIcon(R.drawable.switch_off);
+                    soundBool=false;
+                    nrFavoriteSensors--;
+                    if(favoriteOneText.getText().toString().contains("dB")){favoriteOneText.setText("Unset");} else if(favoriteTwoText.getText().toString().contains("dB")){favoriteTwoText.setText("Unset");}
+                }
+                break;
+            case R.id.lightFav:
+                if(!lightBool){
+                    if(nrFavoriteSensors==2){Toast.makeText(getApplication().getApplicationContext(),"You can't have more than 2 favorized sensors!", Toast.LENGTH_SHORT).show(); break;}
+                    item.setIcon(R.drawable.switch_on);
+                    lightBool=true;
+                    if(favoriteOneText.getText().toString().contains("Unset")){favoriteOneText.setText("DATA"+" lux");} else if(favoriteTwoText.getText().toString().contains("Unset")){favoriteTwoText.setText("DATA"+" lux");}
+                    nrFavoriteSensors++;
+                }else{
+                    item.setIcon(R.drawable.switch_off);
+                    lightBool=false;
+                    nrFavoriteSensors--;
+                    if(favoriteOneText.getText().toString().contains("lux")){favoriteOneText.setText("Unset");} else if(favoriteTwoText.getText().toString().contains("lux")){favoriteTwoText.setText("Unset");}
+                }
+                break;
+            case R.id.accFav:
+                if(!accBool){
+                    if(nrFavoriteSensors==2){Toast.makeText(getApplication().getApplicationContext(),"You can't have more than 2 favorized sensors!", Toast.LENGTH_SHORT).show(); break;}
+                    item.setIcon(R.drawable.switch_on);
+                    accBool=true;
+                    if(favoriteOneText.getText().toString().contains("Unset")){favoriteOneText.setText("DATA"+" speed");} else if(favoriteTwoText.getText().toString().contains("Unset")){favoriteTwoText.setText("DATA"+" speed");}
+                    nrFavoriteSensors++;
+                }else{
+                    item.setIcon(R.drawable.switch_off);
+                    accBool=false;
+                    nrFavoriteSensors--;
+                    if(favoriteOneText.getText().toString().contains("speed")){favoriteOneText.setText("Unset");} else if(favoriteTwoText.getText().toString().contains("speed")){favoriteTwoText.setText("Unset");}
+                }
+                break;
+        }
+        Log.d("favoriteSensor: ",""+nrFavoriteSensors);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        //drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
     public boolean isBluetoothEnabled(){
 
         if(bluetoothAdapter==null){
@@ -131,12 +213,12 @@ public class MainActivity extends AppCompatActivity
             final AlertDialog bluetoothDialog;
             final AlertDialog.Builder bluetoothDialogBuilder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
             bluetoothDialogBuilder.setTitle("Bluetooth error message")
-                    .setMessage("You have to activate bluetooth to synchronize data, would yo like to do it now?")
+                    .setMessage("You have to activate bluetooth to synchronize data, would you like to do it now?")
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                        //this crashes on computer, no bluetooth on emulator phone
-                        bluetoothAdapter.enable();
-                    }
+                            //this crashes on computer, no bluetooth on emulator phone
+                            bluetoothAdapter.enable();
+                        }
                     }).setIcon(R.drawable.ic_error_outline_black_48dp)
                     .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
