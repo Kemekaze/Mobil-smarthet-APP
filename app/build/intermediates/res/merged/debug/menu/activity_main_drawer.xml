@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/test">
+
+    < item android:title="Graphs">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_temperature"
+                    android:icon="@drawable/ic_launcher"
+                    android:title="Temperature" />
+                <item
+                    android:id="@+id/nav_sound"
+                    android:icon="@drawable/ic_speaker_black_48dp"
+                    android:title="Sound" />
+                <item
+                    android:id="@+id/nav_light"
+                    android:icon="@drawable/ic_lightbulb_outline_black_48dp"
+                    android:title="Light" />
+                <item
+                    android:id="@+id/nav_accelerometer"
+                    android:icon="@drawable/ic_directions_run_black_48dp"
+                    android:title="Accelerometer" />
+            </group>
+        </menu>
+    </item>
+
+    <item android:title="Favorite Sensors">
+                <item
+                    android:id="@+id/tempFav"
+                    android:icon="@drawable/switch_off"
+                    android:title="Temperature" />
+                <item
+                    android:id="@+id/soundFav"
+                    android:icon="@drawable/switch_off"
+                    android:title="Sound" />
+                <item
+                    android:id="@+id/lightFav"
+                    android:icon="@drawable/switch_off"
+                    android:title="Light" />
+                <item
+                    android:id="@+id/accFav"
+                    android:icon="@drawable/switch_off"
+                    android:title="Accelerometer" />
+    </item>
+    <item android:title="Other">
+        <menu>
+            <item
+                android:id="@+id/nav_alarm"
+                android:icon="@drawable/ic_access_alarm_black_48dp"
+                android:title="Alarm" />
+        </menu>
+    </item>
+</menu><!-- From: file:/Users/Griffith/Skolan/GitHub/mobil-smarthet-APP/app/src/main/res/menu/activity_main_drawer.xml -->
