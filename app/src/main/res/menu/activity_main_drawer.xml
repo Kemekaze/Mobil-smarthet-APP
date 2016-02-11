@@ -6,11 +6,11 @@
             <group android:checkableBehavior="single">
                 <item
                     android:id="@+id/nav_temperature"
-                    android:icon="@android:drawable/ic_menu_camera"
+                    android:icon="@drawable/ic_launcher"
                     android:title="Temperature" />
                 <item
                     android:id="@+id/nav_sound"
-                    android:icon="@drawable/ic_surround_sound_black_48dp"
+                    android:icon="@drawable/ic_speaker_black_48dp"
                     android:title="Sound" />
                 <item
                     android:id="@+id/nav_light"
@@ -18,7 +18,7 @@
                     android:title="Light" />
                 <item
                     android:id="@+id/nav_accelerometer"
-                    android:icon="@android:drawable/ic_menu_manage"
+                    android:icon="@drawable/ic_directions_run_black_48dp"
                     android:title="Accelerometer" />
             </group>
         </menu>
@@ -28,7 +28,7 @@
         <menu>
             <item
                 android:id="@+id/nav_alarm"
-                android:icon="@drawable/ic_alarm_black_48dp"
+                android:icon="@drawable/ic_access_alarm_black_48dp"
                 android:title="Alarm" />
         </menu>
     </item>

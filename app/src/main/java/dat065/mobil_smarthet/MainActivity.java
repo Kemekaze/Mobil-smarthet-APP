@@ -3,13 +3,8 @@ package dat065.mobil_smarthet;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
-import android.graphics.Point;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.ContextThemeWrapper;
-import android.view.Display;
-import android.view.Gravity;
+import android.support.v7.widget.SwitchCompat;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,16 +14,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.PopupWindow;
+import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private BluetoothAdapter bluetoothAdapter;
+    private SwitchCompat toggle;
+    private TextView bluetoothText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +34,8 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         //New implementation
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        toggle = (SwitchCompat) findViewById(R.id.bluetooth_switch);
+        bluetoothText = (TextView) findViewById(R.id.bluetooth_text);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -146,6 +144,47 @@ public class MainActivity extends AppCompatActivity
             bluetoothDialog = bluetoothDialogBuilder.create();
             bluetoothDialog.getWindow().getAttributes().windowAnimations = R.style.dialog_animation;
             bluetoothDialog.show();
+            bluetoothText.setText("Not Connected");
+        } else{
+            bluetoothText.setText("Connected");
+            toggle.setChecked(true);
+        }
+    }
+
+    /**
+     * Listens to button clicks occurring at the home screen.
+     *
+     * @param v the button that has been clicked
+     */
+    public void onHomeScreenButtonClick(View v) {
+        int id = v.getId();
+        String bName = ((Button)v).getText().toString();
+        Toast.makeText(this, bName, Toast.LENGTH_SHORT).show();
+        /*if(id == R.id.button1) {
+        } else if(id == R.id.button2) {
+        } else if(id == R.id.button3) {
+        } else if(id == R.id.button4) {
+        }*/
+    }
+
+    /**
+     * Listens on the actions of the bluetooth switch at the home screen.
+     * Perform different actions depending on if the state of the switch(on or off).
+     *
+     * @param v the View object of the switch
+     */
+    public void onToggleClick(View v) {
+       SwitchCompat toggle = (SwitchCompat)v;
+        if(toggle.isChecked()) {
+            //Following line crashes in emulator
+            //bluetoothAdapter.enable();
+            Toast.makeText(this, "Bluetooth 'ON'", Toast.LENGTH_SHORT).show();
+            bluetoothText.setText("Connected");
+        } else {
+            //Following line crashes in emulator
+            //bluetoothAdapter.disable();
+            Toast.makeText(this, "Bluetooth 'OFF'", Toast.LENGTH_SHORT).show();
+            bluetoothText.setText("Not Connected");
         }
     }
 }

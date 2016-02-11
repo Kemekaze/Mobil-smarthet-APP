@@ -17,6 +17,7 @@
             android:layout_height="match_parent"
             android:text="Button 1"
             android:id="@+id/button1"
+            android:onClick="onHomeScreenButtonClick"
             android:layout_weight="1"/>
 
         <Button
@@ -25,6 +26,7 @@
             android:text="Button 2"
             android:id="@+id/button2"
             android:layout_alignParentTop="true"
+            android:onClick="onHomeScreenButtonClick"
             android:layout_weight="1"/>
     </LinearLayout>
 
@@ -40,6 +42,7 @@
             android:text="Button 3"
             android:id="@+id/button3"
             android:layout_below="@+id/button1"
+            android:onClick="onHomeScreenButtonClick"
             android:layout_weight="1"/>
 
         <Button
@@ -47,6 +50,7 @@
             android:layout_height="match_parent"
             android:text="Button 4"
             android:id="@+id/button4"
+            android:onClick="onHomeScreenButtonClick"
             android:layout_weight="1"/>
     </LinearLayout>
 </LinearLayout>
