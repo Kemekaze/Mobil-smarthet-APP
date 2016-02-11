@@ -44,13 +44,22 @@ public class MainActivity extends AppCompatActivity
     private TextView favoriteTwoText;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {		
+		
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         //New implementation
+		
+		//bluetoothAdapter.enable();
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+		//----BEGIN BLUETOOTH----
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        registerReceiver(mReceiver, filter);
+        bluetoothAdapter.startDiscovery();
+        Log.i("bt", "Searching for bluetooth server...");
+        //----END BLUETOOTH----
         toggle = (SwitchCompat) findViewById(R.id.bluetooth_switch);
         bluetoothText = (TextView) findViewById(R.id.bluetooth_text);
 
@@ -71,7 +80,33 @@ public class MainActivity extends AppCompatActivity
         navigationView.setItemIconTintList(null);
         checkBluetooth();
     }
-
+	
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mReceiver);
+        BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
+    }
+	
+	private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                Log.i("bt","Bluetooth device found: "+device.getName());
+                if(device.getName().equals(btServerName)){
+                    Log.i("bt","Bluetooth server located!");
+                    btServer = device;
+                    BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
+                    if(btc == null) {
+                        Log.i("bt","Connecting to bluetooth server");
+                        BluetoothClient btc = new BluetoothClient(btServer);
+                     }
+                }
+            }
+        }
+    };
+	
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -81,7 +116,7 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
-
+	
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
