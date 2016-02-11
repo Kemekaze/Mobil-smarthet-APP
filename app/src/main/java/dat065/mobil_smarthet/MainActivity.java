@@ -2,16 +2,15 @@ package dat065.mobil_smarthet;
 
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.ActionBar;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,9 +21,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.Switch;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +33,11 @@ public class MainActivity extends AppCompatActivity
     private TextView bluetoothText;
     private boolean tempBool=false,lightBool=false,accBool=false, soundBool=false;
     private int nrFavoriteSensors = 0;
+    private DrawerLayout drawerLayout;
+
+    private BluetoothClient btc = null;
+    private BluetoothDevice btServer = null;
+    private String btServerName = "dat065MS";
 
     private LinearLayout favoriteOne;
     private TextView favoriteOneText;
@@ -50,29 +52,28 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        //New implementation
-		
-		//bluetoothAdapter.enable();
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        /*
 		//----BEGIN BLUETOOTH----
+        bluetoothAdapter.enable();
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(mReceiver, filter);
         bluetoothAdapter.startDiscovery();
         Log.i("bt", "Searching for bluetooth server...");
         //----END BLUETOOTH----
+        */
         toggle = (SwitchCompat) findViewById(R.id.bluetooth_switch);
         bluetoothText = (TextView) findViewById(R.id.bluetooth_text);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         favoriteOne = (LinearLayout) findViewById(R.id.sensorLayoutOne);
-        favoriteOneText = (TextView) favoriteOne.findViewById(R.id.sensorTextOne);
+        favoriteOneText = (TextView) findViewById(R.id.sensorTextOne);
         favoriteTwo = (LinearLayout) findViewById(R.id.sensorLayoutTwo);
-        favoriteTwoText = (TextView) favoriteTwo.findViewById(R.id.sensorTextTwo);
+        favoriteTwoText = (TextView) findViewById(R.id.sensorTextTwo);
 
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.setDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -145,9 +146,9 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_temperature) {
             setTitle("Temperature");
+            drawerLayout.closeDrawers();
         } else if (id == R.id.nav_sound) {
             setTitle("Sound");
-
         } else if (id == R.id.nav_light) {
             setTitle("Light");
 
@@ -158,11 +159,10 @@ public class MainActivity extends AppCompatActivity
             setTitle("Alarm");
 
         }
-        /*
+        drawerLayout.closeDrawers();
         //This code makes me scared. Will remake later on when other things are done.
         //Maybe remake them into typeless object and insert sensor object when correct one is chosen.
-         */
-        /*nrFavoriteSensors = nrFavoriteSensors>2 ? 2 : nrFavoriteSensors;
+        nrFavoriteSensors = nrFavoriteSensors>2 ? 2 : nrFavoriteSensors;
         nrFavoriteSensors = nrFavoriteSensors<0 ? 0 : nrFavoriteSensors;
         switch (id){
             case R.id.tempFav:
@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         //drawer.closeDrawer(GravityCompat.START);
         return true;
-    }*/
+    }
     public boolean isBluetoothEnabled(){
 
         if(bluetoothAdapter==null){
@@ -299,12 +299,12 @@ public class MainActivity extends AppCompatActivity
         SwitchCompat toggle = (SwitchCompat)v;
         if(toggle.isChecked()) {
             //Following line crashes in emulator
-            //bluetoothAdapter.enable();
+            bluetoothAdapter.enable();
             Toast.makeText(this, "Bluetooth 'ON'", Toast.LENGTH_SHORT).show();
             bluetoothText.setText("Connected");
         } else {
             //Following line crashes in emulator
-            //bluetoothAdapter.disable();
+            bluetoothAdapter.disable();
             Toast.makeText(this, "Bluetooth 'OFF'", Toast.LENGTH_SHORT).show();
             bluetoothText.setText("Not Connected");
         }

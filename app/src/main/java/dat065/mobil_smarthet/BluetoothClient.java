@@ -61,7 +61,7 @@ public class BluetoothClient extends Thread implements Runnable{
     private String read(byte[] data, int bytes){
         String s = "";
         for(int i=0;i<bytes;i++)
-            s+=data[i];
+            s+= (char) data[i];
         Log.i("bt", "Recieved: "+s);
         return s;
     }
