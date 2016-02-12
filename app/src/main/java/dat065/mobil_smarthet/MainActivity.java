@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private BluetoothAdapter bluetoothAdapter;
-    private SwitchCompat toggle;
+    private SwitchCompat bluetoothToggle;
     private TextView bluetoothText;
     private boolean tempBool=false,lightBool=false,accBool=false, soundBool=false;
     private int nrFavoriteSensors = 0;
@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity
         Log.i("bt", "Searching for bluetooth server...");
         //----END BLUETOOTH----
         */
-        toggle = (SwitchCompat) findViewById(R.id.bluetooth_switch);
+        bluetoothToggle = (SwitchCompat) findViewById(R.id.bluetooth_switch);
         bluetoothText = (TextView) findViewById(R.id.bluetooth_text);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
@@ -78,8 +78,9 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        navigationView.setItemIconTintList(null);
+        //navigationView.setItemIconTintList(null);
         checkBluetooth();
+
     }
 	
     @Override
@@ -146,20 +147,20 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_temperature) {
             setTitle("Temperature");
-            drawerLayout.closeDrawers();
+            drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_sound) {
             setTitle("Sound");
+            drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_light) {
             setTitle("Light");
-
+            drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_accelerometer) {
             setTitle("Accelerometer");
-
+            drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_alarm) {
             setTitle("Alarm");
-
+            drawerLayout.closeDrawer(GravityCompat.START);
         }
-        drawerLayout.closeDrawers();
         //This code makes me scared. Will remake later on when other things are done.
         //Maybe remake them into typeless object and insert sensor object when correct one is chosen.
         nrFavoriteSensors = nrFavoriteSensors>2 ? 2 : nrFavoriteSensors;
@@ -269,7 +270,7 @@ public class MainActivity extends AppCompatActivity
             bluetoothText.setText("Not Connected");
         } else{
             bluetoothText.setText("Connected");
-            toggle.setChecked(true);
+            bluetoothToggle.setChecked(true);
         }
     }
 
@@ -280,13 +281,11 @@ public class MainActivity extends AppCompatActivity
      */
     public void onHomeScreenButtonClick(View v) {
         int id = v.getId();
-        String bName = ((Button)v).getText().toString();
-        Toast.makeText(this, bName, Toast.LENGTH_SHORT).show();
-        /*if(id == R.id.button1) {
+        if(id == R.id.button1) {
         } else if(id == R.id.button2) {
         } else if(id == R.id.button3) {
         } else if(id == R.id.button4) {
-        }*/
+        }
     }
 
     /**
