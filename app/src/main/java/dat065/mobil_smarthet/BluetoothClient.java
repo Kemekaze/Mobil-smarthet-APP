@@ -12,37 +12,26 @@ import java.util.UUID;
 
 public class BluetoothClient extends Thread implements Runnable{
 
-    private final BluetoothSocket socket;
-    private final BluetoothDevice device;
-    private final InputStream inStream;
-    private final OutputStream outStream;
+    private BluetoothSocket socket;
+    private BluetoothDevice device;
+    private InputStream inStream;
+    private OutputStream outStream;
 
     public BluetoothClient(BluetoothDevice device) {
-        BluetoothSocket tmp = null;
         this.device = device;
         try {
             UUID uuid = UUID.fromString("57e33d1f-c167-4f5a-a94f-5f0c58f49356");
             Log.i("bt", uuid.toString());
-            tmp = device.createRfcommSocketToServiceRecord(uuid);
-        } catch (IOException e) { }
-        this.socket = tmp;
-
-        BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
-        InputStream tmpIn = null;
-        OutputStream tmpOut = null;
-        try {
+            this.socket = device.createRfcommSocketToServiceRecord(uuid);
+            BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
             socket.connect();
-            tmpIn = socket.getInputStream();
-            tmpOut = socket.getOutputStream();
-
-        } catch (IOException connectException) {
-            try {
-                socket.close();
-            } catch (IOException closeException) { }
+            Log.i("bt", "Socket connected!");
+            inStream = socket.getInputStream();
+            outStream = socket.getOutputStream();
+            this.start();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        this.inStream = tmpIn;
-        this.outStream = tmpOut;
-        this.start();
     }
     public void run() {
         Log.i("bt", "running");
@@ -58,12 +47,13 @@ public class BluetoothClient extends Thread implements Runnable{
             }
         }
     }
-    private String read(byte[] data, int bytes){
-        String s = "";
-        for(int i=0;i<bytes;i++)
-            s+= (char) data[i];
-        Log.i("bt", "Recieved: "+s);
-        return s;
+    private byte[] read(byte[] data, int bytes){
+        byte[] rtnArr = new byte[bytes];
+        for(int i = 0;i < bytes;i++){
+            rtnArr[i]=data[i];
+        }
+        Log.i("bt", "Recieved: "+new String(rtnArr));
+        return rtnArr;
     }
     public void write(byte[] bytes) {
         try {

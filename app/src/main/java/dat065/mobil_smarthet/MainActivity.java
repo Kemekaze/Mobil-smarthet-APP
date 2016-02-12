@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        /*
+
 		//----BEGIN BLUETOOTH----
         bluetoothAdapter.enable();
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity
         bluetoothAdapter.startDiscovery();
         Log.i("bt", "Searching for bluetooth server...");
         //----END BLUETOOTH----
-        */
+
         toggle = (SwitchCompat) findViewById(R.id.bluetooth_switch);
         bluetoothText = (TextView) findViewById(R.id.bluetooth_text);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity
         drawerLayout.closeDrawers();
         //This code makes me scared. Will remake later on when other things are done.
         //Maybe remake them into typeless object and insert sensor object when correct one is chosen.
-        nrFavoriteSensors = nrFavoriteSensors>2 ? 2 : nrFavoriteSensors;
+        /*nrFavoriteSensors = nrFavoriteSensors>2 ? 2 : nrFavoriteSensors;
         nrFavoriteSensors = nrFavoriteSensors<0 ? 0 : nrFavoriteSensors;
         switch (id){
             case R.id.tempFav:
@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity
         Log.d("favoriteSensor: ",""+nrFavoriteSensors);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        //drawer.closeDrawer(GravityCompat.START);
+        //drawer.closeDrawer(GravityCompat.START);*/
         return true;
     }
     public boolean isBluetoothEnabled(){

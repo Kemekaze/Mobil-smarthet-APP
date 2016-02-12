@@ -1,5 +1,4 @@
 <component name="libraryTable">
-<<<<<<< Updated upstream:.idea/libraries/design_23_0_0.xml
   <library name="design-23.0.0">
     <ANNOTATIONS>
       <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.android.support/design/23.0.0/annotations.zip!/" />
@@ -7,12 +6,6 @@
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.android.support/design/23.0.0/jars/classes.jar!/" />
       <root url="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.android.support/design/23.0.0/res" />
-=======
-  <library name="design-22.2.1">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.android.support/design/22.2.1/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.android.support/design/22.2.1/res" />
->>>>>>> Stashed changes:.idea/libraries/design_22_2_1.xml
     </CLASSES>
     <JAVADOC />
     <SOURCES />
