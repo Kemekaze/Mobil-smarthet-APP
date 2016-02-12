@@ -25,6 +25,7 @@
     </item>
 
     <item android:title="Favorite Sensors">
+        <menu>
                 <item
                     android:id="@+id/tempFav"
                     android:icon="@drawable/switch_off"
@@ -41,6 +42,7 @@
                     android:id="@+id/accFav"
                     android:icon="@drawable/switch_off"
                     android:title="Accelerometer" />
+        </menu>
     </item>
     <item android:title="Other">
         <menu>
