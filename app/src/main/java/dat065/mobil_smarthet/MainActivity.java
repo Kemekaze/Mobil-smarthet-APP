@@ -32,18 +32,18 @@ public class MainActivity extends AppCompatActivity
     private SwitchCompat toggle;
     private TextView bluetoothText;
     private boolean tempBool=false,lightBool=false,accBool=false, soundBool=false;
-    private int nrFavoriteSensors = 0;
     private DrawerLayout drawerLayout;
 
     private BluetoothClient btc = null;
     private BluetoothDevice btServer = null;
     private String btServerName = "dat065MS";
 
-    private LinearLayout favoriteOne;
-    private TextView favoriteOneText;
+    FavoriteSensors favoriteSensors;
 
-    private LinearLayout favoriteTwo;
-    private TextView favoriteTwoText;
+    Sensor temperatureSensor;
+    Sensor lightSensor;
+    Sensor soundSensor;
+    Sensor accelerometerSensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {		
@@ -66,10 +66,10 @@ public class MainActivity extends AppCompatActivity
         bluetoothText = (TextView) findViewById(R.id.bluetooth_text);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        favoriteOne = (LinearLayout) findViewById(R.id.sensorLayoutOne);
-        favoriteOneText = (TextView) findViewById(R.id.sensorTextOne);
-        favoriteTwo = (LinearLayout) findViewById(R.id.sensorLayoutTwo);
-        favoriteTwoText = (TextView) findViewById(R.id.sensorTextTwo);
+        temperatureSensor = new Sensor(SensorTypes.TEMPERATURE);
+        lightSensor = new Sensor(SensorTypes.LIGHT);
+        soundSensor = new Sensor(SensorTypes.SOUND);
+        accelerometerSensor = new Sensor(SensorTypes.ACCELEROMETER);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -80,6 +80,8 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setItemIconTintList(null);
         checkBluetooth();
+
+        favoriteSensors = new FavoriteSensors(this);
     }
 	
     @Override
@@ -160,69 +162,57 @@ public class MainActivity extends AppCompatActivity
 
         }
         drawerLayout.closeDrawers();
-        //This code makes me scared. Will remake later on when other things are done.
-        //Maybe remake them into typeless object and insert sensor object when correct one is chosen.
-        nrFavoriteSensors = nrFavoriteSensors>2 ? 2 : nrFavoriteSensors;
-        nrFavoriteSensors = nrFavoriteSensors<0 ? 0 : nrFavoriteSensors;
+
         switch (id){
             case R.id.tempFav:
                 if(!tempBool){
-                    if(nrFavoriteSensors==2){Toast.makeText(getApplication().getApplicationContext(),"You can't have more than 2 favorized sensors!", Toast.LENGTH_SHORT).show(); break;}
-                    item.setIcon(R.drawable.switch_on);
-                    tempBool=true;
-                    if(favoriteOneText.getText().toString().contains("Unset")){favoriteOneText.setText("DATA"+" Celsius");} else if(favoriteTwoText.getText().toString().contains("Unset")){favoriteTwoText.setText("DATA"+" Celsius");}
-                    nrFavoriteSensors++;
+                    if(favoriteSensors.favorizeSensor(temperatureSensor)){
+                        item.setIcon(R.drawable.switch_on);
+                        tempBool=true;
+                    }
                 }else{
                     item.setIcon(R.drawable.switch_off);
                     tempBool=false;
-                    nrFavoriteSensors--;
-                    if(favoriteOneText.getText().toString().contains("Celsius")){favoriteOneText.setText("Unset");} else if(favoriteTwoText.getText().toString().contains("Celsius")){favoriteTwoText.setText("Unset");}
+                    favoriteSensors.unfavorizeSensor(temperatureSensor);
                 }
                 break;
             case R.id.soundFav:
                 if(!soundBool){
-                    if(nrFavoriteSensors==2){Toast.makeText(getApplication().getApplicationContext(),"You can't have more than 2 favorized sensors!", Toast.LENGTH_SHORT).show(); break;}
-                    item.setIcon(R.drawable.switch_on);
-                    soundBool=true;
-                    if(favoriteOneText.getText().toString().contains("Unset")){favoriteOneText.setText("DATA"+" dB");} else if(favoriteTwoText.getText().toString().contains("Unset")){favoriteTwoText.setText("DATA"+" dB");}
-                    nrFavoriteSensors++;
+                    if(favoriteSensors.favorizeSensor(soundSensor)){
+                        item.setIcon(R.drawable.switch_on);
+                        soundBool=true;
+                    }
                 }else{
                     item.setIcon(R.drawable.switch_off);
                     soundBool=false;
-                    nrFavoriteSensors--;
-                    if(favoriteOneText.getText().toString().contains("dB")){favoriteOneText.setText("Unset");} else if(favoriteTwoText.getText().toString().contains("dB")){favoriteTwoText.setText("Unset");}
+                    favoriteSensors.unfavorizeSensor(soundSensor);
                 }
                 break;
             case R.id.lightFav:
                 if(!lightBool){
-                    if(nrFavoriteSensors==2){Toast.makeText(getApplication().getApplicationContext(),"You can't have more than 2 favorized sensors!", Toast.LENGTH_SHORT).show(); break;}
-                    item.setIcon(R.drawable.switch_on);
-                    lightBool=true;
-                    if(favoriteOneText.getText().toString().contains("Unset")){favoriteOneText.setText("DATA"+" lux");} else if(favoriteTwoText.getText().toString().contains("Unset")){favoriteTwoText.setText("DATA"+" lux");}
-                    nrFavoriteSensors++;
+                    if(favoriteSensors.favorizeSensor(lightSensor)){
+                        item.setIcon(R.drawable.switch_on);
+                        lightBool=true;
+                    }
                 }else{
                     item.setIcon(R.drawable.switch_off);
                     lightBool=false;
-                    nrFavoriteSensors--;
-                    if(favoriteOneText.getText().toString().contains("lux")){favoriteOneText.setText("Unset");} else if(favoriteTwoText.getText().toString().contains("lux")){favoriteTwoText.setText("Unset");}
+                    favoriteSensors.unfavorizeSensor(lightSensor);
                 }
                 break;
             case R.id.accFav:
                 if(!accBool){
-                    if(nrFavoriteSensors==2){Toast.makeText(getApplication().getApplicationContext(),"You can't have more than 2 favorized sensors!", Toast.LENGTH_SHORT).show(); break;}
-                    item.setIcon(R.drawable.switch_on);
-                    accBool=true;
-                    if(favoriteOneText.getText().toString().contains("Unset")){favoriteOneText.setText("DATA"+" speed");} else if(favoriteTwoText.getText().toString().contains("Unset")){favoriteTwoText.setText("DATA"+" speed");}
-                    nrFavoriteSensors++;
+                    if(favoriteSensors.favorizeSensor(accelerometerSensor)){
+                        item.setIcon(R.drawable.switch_on);
+                        accBool=true;
+                    }
                 }else{
                     item.setIcon(R.drawable.switch_off);
                     accBool=false;
-                    nrFavoriteSensors--;
-                    if(favoriteOneText.getText().toString().contains("speed")){favoriteOneText.setText("Unset");} else if(favoriteTwoText.getText().toString().contains("speed")){favoriteTwoText.setText("Unset");}
+                    favoriteSensors.unfavorizeSensor(accelerometerSensor);
                 }
                 break;
         }
-        Log.d("favoriteSensor: ",""+nrFavoriteSensors);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         //drawer.closeDrawer(GravityCompat.START);
