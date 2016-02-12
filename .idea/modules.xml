@@ -2,12 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-<<<<<<< Updated upstream
       <module fileurl="file://$PROJECT_DIR$/Mobil-smarthet-APP.iml" filepath="$PROJECT_DIR$/Mobil-smarthet-APP.iml" />
-=======
->>>>>>> Stashed changes
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/mobil-smarthet-APP.iml" filepath="$PROJECT_DIR$/mobil-smarthet-APP.iml" />
     </modules>
   </component>
 </project>
