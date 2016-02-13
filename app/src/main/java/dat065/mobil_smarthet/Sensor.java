@@ -31,6 +31,10 @@ public class Sensor{
         sensorData.put(new Date(key*1000L),value);
     }
 
+    public void addSensorData(Date date, long value){
+        sensorData.put(date,value);
+    }
+
     public Long getMostRelevantData(){
         Calendar calendar = Calendar.getInstance();
         Date currentTime = new Date(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DATE),calendar.get(Calendar.HOUR),calendar.get(Calendar.MINUTE),calendar.get(Calendar.SECOND));
@@ -41,6 +45,21 @@ public class Sensor{
             Collections.sort(tempList, Collections.reverseOrder());
             return sensorData.get(tempList.get(0));
         }
+    }
+
+    public Map<Date,Long> getWeeklyData(){
+        Calendar calendar = Calendar.getInstance();
+        Date currentDate = new Date(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DATE));
+        calendar.setTime(new Date());
+        calendar.set(Calendar.DAY_OF_MONTH,calendar.get(Calendar.DAY_OF_MONTH)-6);
+        Date weekBack = calendar.getTime();
+        HashMap<Date,Long> tempMap = (HashMap) sensorData;
+        for(Date date : tempMap.keySet()){
+            if(date.before(weekBack)){
+                tempMap.remove(date);
+            }
+        }
+        return tempMap;
     }
 
     //Add getWeeklyData
