@@ -48,11 +48,11 @@
             android:onClick="onHomeScreenButtonClick"
             android:layout_weight="1"/>
 
-        <Button
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="Button 4"
-            android:id="@+id/button4"
+            android:src="@drawable/ic_access_alarm_black_48dp"
+            android:id="@+id/alarm_button"
             android:onClick="onHomeScreenButtonClick"
             android:layout_weight="1"/>
     </LinearLayout>

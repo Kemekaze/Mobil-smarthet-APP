@@ -47,20 +47,13 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {		
-		
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-		//----BEGIN BLUETOOTH----
-        bluetoothAdapter.enable();
-        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        registerReceiver(mReceiver, filter);
-        bluetoothAdapter.startDiscovery();
-        Log.i("bt", "Searching for bluetooth server...");
-        //----END BLUETOOTH-----
         bluetoothToggle = (SwitchCompat) findViewById(R.id.bluetooth_switch);
         bluetoothText = (TextView) findViewById(R.id.bluetooth_text);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -74,18 +67,19 @@ public class MainActivity extends AppCompatActivity
                 this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.setDrawerListener(toggle);
         toggle.syncState();
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         //navigationView.setItemIconTintList(null);
         checkBluetooth();
 
     }
-	
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(mReceiver);
+        if(isBluetoothEnabled()) {
+            unregisterReceiver(mReceiver);
+        }
         BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
     }
 	
@@ -122,7 +116,6 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-
         return true;
     }
 
@@ -132,10 +125,84 @@ public class MainActivity extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         //noinspection SimplifiableIfStatement
-
         return super.onOptionsItemSelected(item);
+    }
+
+    public boolean isBluetoothEnabled(){
+
+        if(bluetoothAdapter==null){
+            return false;
+        }
+        return bluetoothAdapter.isEnabled();
+    }
+
+    public void activateBluetooth() {
+        bluetoothText.setText("Connected");
+        bluetoothToggle.setChecked(true);
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        registerReceiver(mReceiver, filter);
+        bluetoothAdapter.startDiscovery();
+    }
+    /**
+     * Listens to button clicks occurring at the home screen.
+     *
+     * @param v the button that has been clicked
+     */
+    public void onHomeScreenButtonClick(View v) {
+        int id = v.getId();
+        if(id == R.id.button1) {
+        } else if(id == R.id.button2) {
+        } else if(id == R.id.button3) {
+        } else if(id == R.id.alarm_button) {
+            startActivity(new Intent(this, IconActivity.class).putExtra("icon", "Alarm"));
+        }
+    }
+
+    /**
+     * Listens on the actions of the bluetooth switch at the home screen.
+     * Perform different actions depending on if the state of the switch(on or off).
+     *
+     * @param v the View object of the switch
+     */
+    public void onToggleClick(View v) {
+        SwitchCompat toggle = (SwitchCompat)v;
+        if(toggle.isChecked()) {
+            //Following line crashes in emulator
+            activateBluetooth();
+            Toast.makeText(this, "Bluetooth 'ON'", Toast.LENGTH_SHORT).show();
+        } else {
+            //Following line crashes in emulator
+            bluetoothAdapter.disable();
+            Toast.makeText(this, "Bluetooth 'OFF'", Toast.LENGTH_SHORT).show();
+            bluetoothText.setText("Not Connected");
+        }
+    }
+    public void checkBluetooth() {
+        //Check if bluetooth is on, if not alert and ask if user want to start
+        if(!isBluetoothEnabled()){
+            final AlertDialog bluetoothDialog;
+            final AlertDialog.Builder bluetoothDialogBuilder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
+            bluetoothDialogBuilder.setTitle("Bluetooth error message")
+                    .setMessage("You have to activate bluetooth to synchronize data, would you like to do it now?")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            //this crashes on computer, no bluetooth on emulator phone
+                            activateBluetooth();
+                        }
+                    }).setIcon(R.drawable.ic_error_outline_black_48dp)
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            bluetoothDialog = bluetoothDialogBuilder.create();
+            bluetoothDialog.getWindow().getAttributes().windowAnimations = R.style.dialog_animation;
+            bluetoothDialog.show();
+            bluetoothText.setText("Not Connected");
+        } else{
+            activateBluetooth();
+        }
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -143,26 +210,25 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
         if (id == R.id.nav_temperature) {
-            setTitle("Temperature");
+            startActivity(new Intent(this, IconActivity.class).putExtra("icon", "Temperature"));
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_sound) {
-            setTitle("Sound");
+            startActivity(new Intent(this, IconActivity.class).putExtra("icon", "Sound"));
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_light) {
-            setTitle("Light");
+            startActivity(new Intent(this, IconActivity.class).putExtra("icon", "Light"));
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_accelerometer) {
-            setTitle("Accelerometer");
+            startActivity(new Intent(this, IconActivity.class).putExtra("icon", "Accelerometer"));
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_alarm) {
-            setTitle("Alarm");
+            startActivity(new Intent(this, IconActivity.class).putExtra("icon", "Alarm"));
             drawerLayout.closeDrawer(GravityCompat.START);
         }
         //This code makes me scared. Will remake later on when other things are done.
         //Maybe remake them into typeless object and insert sensor object when correct one is chosen.
-        /*nrFavoriteSensors = nrFavoriteSensors>2 ? 2 : nrFavoriteSensors;
+        nrFavoriteSensors = nrFavoriteSensors>2 ? 2 : nrFavoriteSensors;
         nrFavoriteSensors = nrFavoriteSensors<0 ? 0 : nrFavoriteSensors;
         switch (id){
             case R.id.tempFav:
@@ -225,86 +291,7 @@ public class MainActivity extends AppCompatActivity
         Log.d("favoriteSensor: ",""+nrFavoriteSensors);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        //drawer.closeDrawer(GravityCompat.START);*/
+        //drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-    public boolean isBluetoothEnabled(){
-
-        if(bluetoothAdapter==null){
-            return false;
-        }
-        return bluetoothAdapter.isEnabled();
-    }
-
-    /**
-     * Sets the actionbar title to the specific title
-     *
-     * @param title     the title to set
-     */
-    public void setTitle(String title) {
-        getSupportActionBar().setTitle(title);
-    }
-
-    public void checkBluetooth() {
-        //Check if bluetooth is on, if not alert and ask if user want to start
-        if(!isBluetoothEnabled()){
-            final AlertDialog bluetoothDialog;
-            final AlertDialog.Builder bluetoothDialogBuilder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
-            bluetoothDialogBuilder.setTitle("Bluetooth error message")
-                    .setMessage("You have to activate bluetooth to synchronize data, would you like to do it now?")
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            //this crashes on computer, no bluetooth on emulator phone
-                            bluetoothAdapter.enable();
-                        }
-                    }).setIcon(R.drawable.ic_error_outline_black_48dp)
-                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-            bluetoothDialog = bluetoothDialogBuilder.create();
-            bluetoothDialog.getWindow().getAttributes().windowAnimations = R.style.dialog_animation;
-            bluetoothDialog.show();
-            bluetoothText.setText("Not Connected");
-        } else{
-            bluetoothText.setText("Connected");
-            bluetoothToggle.setChecked(true);
-        }
-    }
-
-    /**
-     * Listens to button clicks occurring at the home screen.
-     *
-     * @param v the button that has been clicked
-     */
-    public void onHomeScreenButtonClick(View v) {
-        int id = v.getId();
-        if(id == R.id.button1) {
-        } else if(id == R.id.button2) {
-        } else if(id == R.id.button3) {
-        } else if(id == R.id.button4) {
-        }
-    }
-
-    /**
-     * Listens on the actions of the bluetooth switch at the home screen.
-     * Perform different actions depending on if the state of the switch(on or off).
-     *
-     * @param v the View object of the switch
-     */
-    public void onToggleClick(View v) {
-        SwitchCompat toggle = (SwitchCompat)v;
-        if(toggle.isChecked()) {
-            //Following line crashes in emulator
-            bluetoothAdapter.enable();
-            Toast.makeText(this, "Bluetooth 'ON'", Toast.LENGTH_SHORT).show();
-            bluetoothText.setText("Connected");
-        } else {
-            //Following line crashes in emulator
-            bluetoothAdapter.disable();
-            Toast.makeText(this, "Bluetooth 'OFF'", Toast.LENGTH_SHORT).show();
-            bluetoothText.setText("Not Connected");
-        }
     }
 }
