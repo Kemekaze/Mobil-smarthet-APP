@@ -2,9 +2,14 @@ package dat065.mobil_smarthet;
 
 import android.app.Activity;
 import android.app.Application;
+import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,6 +22,9 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.utils.ColorTemplate;
+
+import org.joda.time.DateTime;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -39,38 +47,38 @@ public class FavoriteSensors{
 
     private ArrayList<Entry> entries;
 
+    private Handler handler;
+
 
     public FavoriteSensors(final MainActivity activity){
         this.activity = activity;
         favoriteOneText = (TextView) this.activity.findViewById(R.id.sensorTextOne);
         favoriteTwoText = (TextView) this.activity.findViewById(R.id.sensorTextTwo);
 
+        handler = new Handler();
+
         entries = new ArrayList<>();
 
         favoriteOneText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList<Date> dailyData = new ArrayList<Date>(favoriteOne.getWeeklyData().keySet());
-
-                int k = 0;
-                ArrayList<String> labels = new ArrayList<String>();
-                for(Date date : dailyData){
-                    entries.add(new Entry(favoriteOne.getSensorData().get(date),k));
-                    labels.add("Day "+date.getDay());
-                    k++;
+                if(favoriteOne==null){
+                    Toast.makeText(activity.getApplicationContext(),"No sensor favored!",Toast.LENGTH_SHORT);
+                }else{
+                    createLineChart(favoriteOne);
                 }
-                LineDataSet dataset = new LineDataSet(entries, "Daily "+favoriteOne.type.toString());
-                LineChart chart = new LineChart(activity.getApplicationContext());
-                activity.setContentView(chart);
-                LineData data = new LineData(labels,dataset);
-                chart.setData(data);
+
             }
         });
 
         favoriteTwoText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if(favoriteTwo==null){
+                    Toast.makeText(activity.getApplicationContext(),"No sensor favored!",Toast.LENGTH_SHORT);
+                }else{
+                    createLineChart(favoriteTwo);
+                }
             }
         });
     }
@@ -78,11 +86,19 @@ public class FavoriteSensors{
     public boolean favorizeSensor(Sensor sensor){
         if(favoriteOne==null){
             favoriteOne = sensor;
-            favoriteOneText.setText(favoriteOne.getMostRelevantData().toString()+" "+favoriteOne.type.toString()); //favoriteOne.getMostRelevantData().toString()
+            if(favoriteOne.getMostRelevantData()==null){
+                favoriteOneText.setText("No data");
+            }else{
+                favoriteOneText.setText(favoriteOne.getMostRelevantData().toString()+" "+favoriteOne.type.toString());
+            }
             return true;
         }else if(favoriteTwo==null){
             favoriteTwo = sensor;
-            favoriteTwoText.setText(favoriteTwo.getMostRelevantData().toString()+" "+favoriteTwo.type.toString()); //favoriteTwo.getMostRelevantData().toString()
+            if(favoriteTwo.getMostRelevantData()==null){
+                favoriteTwoText.setText("No data");
+            }else{
+                favoriteTwoText.setText(favoriteTwo.getMostRelevantData().toString()+" "+favoriteTwo.type.toString());
+            }
             return true;
         }else{
             Toast.makeText(activity.getApplicationContext(),"You can't have more than 2 favorized sensors!", Toast.LENGTH_SHORT).show();
@@ -105,6 +121,33 @@ public class FavoriteSensors{
             favoriteTwo = null;
             favoriteTwoText.setText("Unset");
         }
+    }
+
+    public void createLineChart(Sensor sensor){
+        if(sensor.sensorData.isEmpty()){
+            Toast.makeText(activity.getApplicationContext(),"No data found",Toast.LENGTH_SHORT);
+            return;
+        }
+        final Intent i = new Intent(activity.getApplicationContext(), GraphActivity.class);
+        i.putExtra("sensor", sensor);
+        i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+
+                //do long stuff (like getting info for intent)
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        activity.startActivity(i);
+                        //make new intent
+                        //start new activity with intent you just made
+                    }
+                });
+            }
+        };
+    new Thread(runnable).start();
+
     }
 
     //Also create custom listener for the objects that is connected to this class
