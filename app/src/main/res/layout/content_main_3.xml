@@ -16,19 +16,11 @@
         <include layout="@layout/sensor_layout_one"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-
-            android:text="Button 1"
-            android:id="@+id/button1"
-            android:onClick="onHomeScreenButtonClick"
             android:layout_weight="1"/>
 
         <include layout="@layout/sensor_layout_two"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="Button 2"
-            android:id="@+id/button2"
-            android:layout_alignParentTop="true"
-            android:onClick="onHomeScreenButtonClick"
             android:layout_weight="1"/>
 
     </LinearLayout>
@@ -39,21 +31,13 @@
         android:orientation="horizontal"
         android:layout_weight="1">
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="Button 3"
-            android:id="@+id/button3"
-            android:layout_below="@+id/button1"
-            android:onClick="onHomeScreenButtonClick"
-            android:layout_weight="1"/>
 
         <ImageButton
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/ic_access_alarm_black_48dp"
             android:id="@+id/alarm_button"
-            android:onClick="onHomeScreenButtonClick"
+            android:onClick="onAlarmClick"
             android:layout_weight="1"/>
     </LinearLayout>
 </LinearLayout>

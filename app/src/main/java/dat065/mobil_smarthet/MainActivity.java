@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.View;
@@ -25,6 +26,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.joda.time.DateTime;
+
+import java.util.ArrayList;
+import java.util.Date;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -32,18 +38,18 @@ public class MainActivity extends AppCompatActivity
     private SwitchCompat bluetoothToggle;
     private TextView bluetoothText;
     private boolean tempBool=false,lightBool=false,accBool=false, soundBool=false;
-    private int nrFavoriteSensors = 0;
     private DrawerLayout drawerLayout;
 
     private BluetoothClient btc = null;
     private BluetoothDevice btServer = null;
     private String btServerName = "dat065MS";
 
-    private LinearLayout favoriteOne;
-    private TextView favoriteOneText;
+    FavoriteSensors favoriteSensors;
 
-    private LinearLayout favoriteTwo;
-    private TextView favoriteTwoText;
+    Sensor temperatureSensor;
+    Sensor lightSensor;
+    Sensor soundSensor;
+    Sensor accelerometerSensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {		
@@ -58,10 +64,10 @@ public class MainActivity extends AppCompatActivity
         bluetoothText = (TextView) findViewById(R.id.bluetooth_text);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        favoriteOne = (LinearLayout) findViewById(R.id.sensorLayoutOne);
-        favoriteOneText = (TextView) findViewById(R.id.sensorTextOne);
-        favoriteTwo = (LinearLayout) findViewById(R.id.sensorLayoutTwo);
-        favoriteTwoText = (TextView) findViewById(R.id.sensorTextTwo);
+        temperatureSensor = new Sensor(SensorTypes.TEMPERATURE);
+        lightSensor = new Sensor(SensorTypes.LIGHT);
+        soundSensor = new Sensor(SensorTypes.SOUND);
+        accelerometerSensor = new Sensor(SensorTypes.ACCELEROMETER);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -71,7 +77,21 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         //navigationView.setItemIconTintList(null);
         checkBluetooth();
+        favoriteSensors = new FavoriteSensors(this);
 
+        //Test data
+        temperatureSensor.addSensorData(new DateTime(2016,2,2,6,0),5);
+        temperatureSensor.addSensorData(new DateTime(2016,2,3,7,0),7);
+        temperatureSensor.addSensorData(new DateTime(2016,2,4,8,0),14);
+        temperatureSensor.addSensorData(new DateTime(2016,2,5,9,0),4);
+        temperatureSensor.addSensorData(new DateTime(2016,2,6,10,0),1);
+        temperatureSensor.addSensorData(new DateTime(2016,2,7,11,0),0);
+        temperatureSensor.addSensorData(new DateTime(2016,2,8,12,0),22);
+        temperatureSensor.addSensorData(new DateTime(2016,2,9,13,0),14);
+        temperatureSensor.addSensorData(new DateTime(2016,2,10,14,0),13);
+        temperatureSensor.addSensorData(new DateTime(2016,2,11,15,0),7);
+        temperatureSensor.addSensorData(new DateTime(2016,2,12,16,0),5);
+        temperatureSensor.addSensorData(new DateTime(2016,2,13,17,0),3);
     }
 
     @Override
@@ -81,7 +101,9 @@ public class MainActivity extends AppCompatActivity
             unregisterReceiver(mReceiver);
         }
         BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
+
     }
+
 	
 	private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -89,14 +111,16 @@ public class MainActivity extends AppCompatActivity
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 Log.i("bt","Bluetooth device found: "+device.getName());
-                if(device.getName().equals(btServerName)){
-                    Log.i("bt","Bluetooth server located!");
-                    btServer = device;
-                    BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
-                    if(btc == null) {
-                        Log.i("bt","Connecting to bluetooth server");
-                        BluetoothClient btc = new BluetoothClient(btServer);
-                     }
+                if(device.getName() != null) {
+                    if (device.getName().equals(btServerName)) {
+                        Log.i("bt", "Bluetooth server located!");
+                        btServer = device;
+                        BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
+                        if (btc == null) {
+                            Log.i("bt", "Connecting to bluetooth server");
+                            BluetoothClient btc = new BluetoothClient(btServer);
+                        }
+                    }
                 }
             }
         }
@@ -149,14 +173,8 @@ public class MainActivity extends AppCompatActivity
      *
      * @param v the button that has been clicked
      */
-    public void onHomeScreenButtonClick(View v) {
-        int id = v.getId();
-        if(id == R.id.button1) {
-        } else if(id == R.id.button2) {
-        } else if(id == R.id.button3) {
-        } else if(id == R.id.alarm_button) {
-            startActivity(new Intent(this, IconActivity.class).putExtra("icon", "Alarm"));
-        }
+    public void onAlarmClick(View v) {
+        Toast.makeText(this, "Alarm activity to be", Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -210,88 +228,98 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+         Intent i = new Intent(this, GraphActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         if (id == R.id.nav_temperature) {
-            startActivity(new Intent(this, IconActivity.class).putExtra("icon", "Temperature"));
+            i.putExtra("sensor", temperatureSensor);
+            runActivity(i);
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_sound) {
-            startActivity(new Intent(this, IconActivity.class).putExtra("icon", "Sound"));
+            i.putExtra("sensor", soundSensor);
+            startActivity(i);
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_light) {
-            startActivity(new Intent(this, IconActivity.class).putExtra("icon", "Light"));
+            i.putExtra("sensor", lightSensor);
+            startActivity(i);
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_accelerometer) {
-            startActivity(new Intent(this, IconActivity.class).putExtra("icon", "Accelerometer"));
+            i.putExtra("sensor", accelerometerSensor);
+            startActivity(i);
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_alarm) {
-            startActivity(new Intent(this, IconActivity.class).putExtra("icon", "Alarm"));
+            Toast.makeText(this, "Alarm activity to be", Toast.LENGTH_SHORT).show();
             drawerLayout.closeDrawer(GravityCompat.START);
         }
-        //This code makes me scared. Will remake later on when other things are done.
-        //Maybe remake them into typeless object and insert sensor object when correct one is chosen.
-        nrFavoriteSensors = nrFavoriteSensors>2 ? 2 : nrFavoriteSensors;
-        nrFavoriteSensors = nrFavoriteSensors<0 ? 0 : nrFavoriteSensors;
         switch (id){
             case R.id.tempFav:
                 if(!tempBool){
-                    if(nrFavoriteSensors==2){Toast.makeText(getApplication().getApplicationContext(),"You can't have more than 2 favorized sensors!", Toast.LENGTH_SHORT).show(); break;}
-                    item.setIcon(R.drawable.switch_on);
-                    tempBool=true;
-                    if(favoriteOneText.getText().toString().contains("Unset")){favoriteOneText.setText("DATA"+" Celsius");} else if(favoriteTwoText.getText().toString().contains("Unset")){favoriteTwoText.setText("DATA"+" Celsius");}
-                    nrFavoriteSensors++;
+                    if(favoriteSensors.favorizeSensor(temperatureSensor)){
+                        item.setIcon(R.drawable.switch_on);
+                        tempBool=true;
+                    }
                 }else{
                     item.setIcon(R.drawable.switch_off);
                     tempBool=false;
-                    nrFavoriteSensors--;
-                    if(favoriteOneText.getText().toString().contains("Celsius")){favoriteOneText.setText("Unset");} else if(favoriteTwoText.getText().toString().contains("Celsius")){favoriteTwoText.setText("Unset");}
+                    favoriteSensors.unfavorizeSensor(temperatureSensor);
                 }
                 break;
             case R.id.soundFav:
                 if(!soundBool){
-                    if(nrFavoriteSensors==2){Toast.makeText(getApplication().getApplicationContext(),"You can't have more than 2 favorized sensors!", Toast.LENGTH_SHORT).show(); break;}
-                    item.setIcon(R.drawable.switch_on);
-                    soundBool=true;
-                    if(favoriteOneText.getText().toString().contains("Unset")){favoriteOneText.setText("DATA"+" dB");} else if(favoriteTwoText.getText().toString().contains("Unset")){favoriteTwoText.setText("DATA"+" dB");}
-                    nrFavoriteSensors++;
+                    if(favoriteSensors.favorizeSensor(soundSensor)){
+                        item.setIcon(R.drawable.switch_on);
+                        soundBool=true;
+                    }
                 }else{
                     item.setIcon(R.drawable.switch_off);
                     soundBool=false;
-                    nrFavoriteSensors--;
-                    if(favoriteOneText.getText().toString().contains("dB")){favoriteOneText.setText("Unset");} else if(favoriteTwoText.getText().toString().contains("dB")){favoriteTwoText.setText("Unset");}
+                    favoriteSensors.unfavorizeSensor(soundSensor);
                 }
                 break;
             case R.id.lightFav:
                 if(!lightBool){
-                    if(nrFavoriteSensors==2){Toast.makeText(getApplication().getApplicationContext(),"You can't have more than 2 favorized sensors!", Toast.LENGTH_SHORT).show(); break;}
-                    item.setIcon(R.drawable.switch_on);
-                    lightBool=true;
-                    if(favoriteOneText.getText().toString().contains("Unset")){favoriteOneText.setText("DATA"+" lux");} else if(favoriteTwoText.getText().toString().contains("Unset")){favoriteTwoText.setText("DATA"+" lux");}
-                    nrFavoriteSensors++;
+                    if(favoriteSensors.favorizeSensor(lightSensor)){
+                        item.setIcon(R.drawable.switch_on);
+                        lightBool=true;
+                    }
                 }else{
                     item.setIcon(R.drawable.switch_off);
                     lightBool=false;
-                    nrFavoriteSensors--;
-                    if(favoriteOneText.getText().toString().contains("lux")){favoriteOneText.setText("Unset");} else if(favoriteTwoText.getText().toString().contains("lux")){favoriteTwoText.setText("Unset");}
+                    favoriteSensors.unfavorizeSensor(lightSensor);
                 }
                 break;
             case R.id.accFav:
                 if(!accBool){
-                    if(nrFavoriteSensors==2){Toast.makeText(getApplication().getApplicationContext(),"You can't have more than 2 favorized sensors!", Toast.LENGTH_SHORT).show(); break;}
-                    item.setIcon(R.drawable.switch_on);
-                    accBool=true;
-                    if(favoriteOneText.getText().toString().contains("Unset")){favoriteOneText.setText("DATA"+" speed");} else if(favoriteTwoText.getText().toString().contains("Unset")){favoriteTwoText.setText("DATA"+" speed");}
-                    nrFavoriteSensors++;
+                    if(favoriteSensors.favorizeSensor(accelerometerSensor)){
+                        item.setIcon(R.drawable.switch_on);
+                        accBool=true;
+                    }
                 }else{
                     item.setIcon(R.drawable.switch_off);
                     accBool=false;
-                    nrFavoriteSensors--;
-                    if(favoriteOneText.getText().toString().contains("speed")){favoriteOneText.setText("Unset");} else if(favoriteTwoText.getText().toString().contains("speed")){favoriteTwoText.setText("Unset");}
+                    favoriteSensors.unfavorizeSensor(accelerometerSensor);
                 }
                 break;
         }
-        Log.d("favoriteSensor: ",""+nrFavoriteSensors);
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        //drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void runActivity(final Intent i) {
+        final Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+
+                //do long stuff (like getting info for intent)
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        startActivity(i);
+                        //make new intent
+                        //start new activity with intent you just made
+                    }
+                });
+            }
+        };
+        new Thread(runnable).start();
     }
 }
