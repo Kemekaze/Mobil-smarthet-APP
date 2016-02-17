@@ -42,14 +42,10 @@ public class BluetoothClient extends Thread implements Runnable{
     }
     public void run() {
         Log.i("bt", "running");
-        //2^10 ~1 KB
-        //2^20 ~1 MB
-        //2^30 ~1 GB
-        int bufferBytes = 2^20;
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[1048576];
         int bytes;
 
-        write(getMessage((byte) 0x01, (byte) 0x01, 7200));
+        write(getMessage((byte) 0x01, (byte) 0x01, 20000));
         while (true) {
             try {
                 bytes = inStream.read(buffer);
@@ -58,6 +54,7 @@ public class BluetoothClient extends Thread implements Runnable{
                 ArrayList<SerializableSensor> s = (ArrayList<SerializableSensor>) deserialize(data);
 
                 Log.i("bt","Sensor: "+s.get(0).getSensor());
+                Log.i("bt","Data count: "+s.get(0).getData().size());
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
                 break;
