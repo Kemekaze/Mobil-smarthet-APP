@@ -10,26 +10,23 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.widget.SwitchCompat;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.LinearLayout;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.joda.time.DateTime;
 
-import java.util.ArrayList;
-import java.util.Date;
+import dat065.mobil_smarthet.bluetooth.BluetoothClient;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -119,6 +116,7 @@ public class MainActivity extends AppCompatActivity
                         if (btc == null) {
                             Log.i("bt", "Connecting to bluetooth server");
                             BluetoothClient btc = new BluetoothClient(btServer);
+                            btc.start();
                         }
                     }
                 }
@@ -166,6 +164,7 @@ public class MainActivity extends AppCompatActivity
         bluetoothToggle.setChecked(true);
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(mReceiver, filter);
+        Log.i("bt","Searching for server");
         bluetoothAdapter.startDiscovery();
     }
     /**
