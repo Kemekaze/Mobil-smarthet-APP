@@ -15,6 +15,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import dat065.mobil_smarthet.Sensor.SerializableSensor;
+
 public class BluetoothClient extends Thread implements Runnable{
 
     private BluetoothSocket socket;

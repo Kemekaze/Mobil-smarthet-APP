@@ -21,15 +21,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import org.joda.time.DateTime;
 
-import java.util.ArrayList;
-import java.util.Date;
+import dat065.mobil_smarthet.Alarm.AlarmActivity;
+import dat065.mobil_smarthet.Sensor.FavoriteSensors;
+import dat065.mobil_smarthet.Sensor.GraphActivity;
+import dat065.mobil_smarthet.Sensor.Sensor;
+import dat065.mobil_smarthet.Sensor.SensorTypes;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -101,9 +101,7 @@ public class MainActivity extends AppCompatActivity
             unregisterReceiver(mReceiver);
         }
         BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
-
     }
-
 	
 	private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -169,12 +167,13 @@ public class MainActivity extends AppCompatActivity
         bluetoothAdapter.startDiscovery();
     }
     /**
-     * Listens to button clicks occurring at the home screen.
+     * Listens to the alarm button located at the home screen.
+     * When called, it starts a new AlarmActivity
      *
-     * @param v the button that has been clicked
+     * @param v the alarm button
      */
     public void onAlarmClick(View v) {
-        Toast.makeText(this, "Alarm activity to be", Toast.LENGTH_SHORT).show();
+        runActivity(new Intent(this, AlarmActivity.class));
     }
 
     /**
@@ -228,8 +227,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-         Intent i = new Intent(this, GraphActivity.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        Intent i = new Intent(this, GraphActivity.class);
         if (id == R.id.nav_temperature) {
             i.putExtra("sensor", temperatureSensor);
             runActivity(i);
@@ -247,7 +245,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(i);
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_alarm) {
-            Toast.makeText(this, "Alarm activity to be", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, AlarmActivity.class));
             drawerLayout.closeDrawer(GravityCompat.START);
         }
         switch (id){
@@ -304,6 +302,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void runActivity(final Intent i) {
+        i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         final Handler handler = new Handler();
         Runnable runnable = new Runnable() {
             @Override
