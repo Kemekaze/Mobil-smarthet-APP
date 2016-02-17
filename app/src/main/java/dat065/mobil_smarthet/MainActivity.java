@@ -30,6 +30,8 @@ import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -43,6 +45,9 @@ public class MainActivity extends AppCompatActivity
     private BluetoothClient btc = null;
     private BluetoothDevice btServer = null;
     private String btServerName = "dat065MS";
+
+    private SensorDBHandler sensorDBHandler;
+    private FavoriteSensorsDBHandler favoriteSensorsDBHandler;
 
     FavoriteSensors favoriteSensors;
 
@@ -69,6 +74,9 @@ public class MainActivity extends AppCompatActivity
         soundSensor = new Sensor(SensorTypes.SOUND);
         accelerometerSensor = new Sensor(SensorTypes.ACCELEROMETER);
 
+        sensorDBHandler = new SensorDBHandler(this,null);
+        favoriteSensorsDBHandler = new FavoriteSensorsDBHandler(this,null);
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.setDrawerListener(toggle);
@@ -77,7 +85,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         //navigationView.setItemIconTintList(null);
         checkBluetooth();
-        favoriteSensors = new FavoriteSensors(this);
+        favoriteSensors = new FavoriteSensors(this,favoriteSensorsDBHandler);
 
         //Test data
         temperatureSensor.addSensorData(new DateTime(2016,2,2,6,0),5);
@@ -92,6 +100,41 @@ public class MainActivity extends AppCompatActivity
         temperatureSensor.addSensorData(new DateTime(2016,2,11,15,0),7);
         temperatureSensor.addSensorData(new DateTime(2016,2,12,16,0),5);
         temperatureSensor.addSensorData(new DateTime(2016,2,13,17,0),3);
+
+        HashMap<Integer,String> dbCheckMap = new HashMap<>(favoriteSensorsDBHandler.getFavorites());
+        if(dbCheckMap.containsKey(1)){
+            switch (dbCheckMap.get(1)){
+                case "temperature":
+                    favoriteSensors.favorizeSensor(temperatureSensor);
+                    break;
+                case "light":
+                    favoriteSensors.favorizeSensor(lightSensor);
+                    break;
+                case "sound":
+                    favoriteSensors.favorizeSensor(soundSensor);
+                    break;
+                case "accelerometer":
+                    favoriteSensors.favorizeSensor(accelerometerSensor);
+                    break;
+            }
+            Log.d("FetchWorked","");
+        }
+        if(dbCheckMap.containsKey(2)){
+            switch (dbCheckMap.get(2)){
+                case "temperature":
+                    favoriteSensors.favorizeSensor(temperatureSensor);
+                    break;
+                case "light":
+                    favoriteSensors.favorizeSensor(lightSensor);
+                    break;
+                case "sound":
+                    favoriteSensors.favorizeSensor(soundSensor);
+                    break;
+                case "accelerometer":
+                    favoriteSensors.favorizeSensor(accelerometerSensor);
+                    break;
+            }
+        }
     }
 
     @Override
@@ -101,7 +144,6 @@ public class MainActivity extends AppCompatActivity
             unregisterReceiver(mReceiver);
         }
         BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
-
     }
 
 	

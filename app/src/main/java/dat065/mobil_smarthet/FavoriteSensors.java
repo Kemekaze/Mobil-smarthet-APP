@@ -45,19 +45,19 @@ public class FavoriteSensors{
     private Sensor favoriteOne;
     private Sensor favoriteTwo;
 
-    private ArrayList<Entry> entries;
-
     private Handler handler;
 
+    private FavoriteSensorsDBHandler favoriteDBHandler;
 
-    public FavoriteSensors(final MainActivity activity){
+
+    public FavoriteSensors(final MainActivity activity, FavoriteSensorsDBHandler fav){
         this.activity = activity;
         favoriteOneText = (TextView) this.activity.findViewById(R.id.sensorTextOne);
         favoriteTwoText = (TextView) this.activity.findViewById(R.id.sensorTextTwo);
 
-        handler = new Handler();
+        favoriteDBHandler = fav;
 
-        entries = new ArrayList<>();
+        handler = new Handler();
 
         favoriteOneText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,6 +91,8 @@ public class FavoriteSensors{
             }else{
                 favoriteOneText.setText(favoriteOne.getMostRelevantData().toString()+" "+favoriteOne.type.toString());
             }
+            favoriteDBHandler.addFavorite(sensor.type,1);
+            Log.d("addedFav","");
             return true;
         }else if(favoriteTwo==null){
             favoriteTwo = sensor;
@@ -99,6 +101,7 @@ public class FavoriteSensors{
             }else{
                 favoriteTwoText.setText(favoriteTwo.getMostRelevantData().toString()+" "+favoriteTwo.type.toString());
             }
+            favoriteDBHandler.addFavorite(sensor.type,2);
             return true;
         }else{
             Toast.makeText(activity.getApplicationContext(),"You can't have more than 2 favorized sensors!", Toast.LENGTH_SHORT).show();
@@ -117,9 +120,11 @@ public class FavoriteSensors{
         if(favoriteOne.type == sensor.type){
             favoriteOne = null;
             favoriteOneText.setText("Unset");
+            favoriteDBHandler.removeFavorite(1);
         }else if(favoriteTwo.type == sensor.type){
             favoriteTwo = null;
             favoriteTwoText.setText("Unset");
+            favoriteDBHandler.removeFavorite(2);
         }
     }
 
