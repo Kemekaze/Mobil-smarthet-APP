@@ -1,4 +1,4 @@
-package dat065.mobil_smarthet.Sensor;
+package dat065.mobil_smarthet.sensor;
 
 import java.io.Serializable;
 import java.util.ArrayList;

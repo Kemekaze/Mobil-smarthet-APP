@@ -2,7 +2,6 @@ package dat065.mobil_smarthet.bluetooth;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Map;
 
 public class SerializableSensor implements Serializable{
 
@@ -25,7 +24,7 @@ public class SerializableSensor implements Serializable{
     public void setSensor(int sensor) {
         this.sensor = sensor;
     }
-    public Map<Integer, Double> getData() {
+    public HashMap<Integer, Double> getData() {
         return data;
     }
     public void setData(HashMap<Integer, Double> data) {

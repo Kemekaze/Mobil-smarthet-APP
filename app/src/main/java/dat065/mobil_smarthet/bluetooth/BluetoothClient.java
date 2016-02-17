@@ -3,6 +3,7 @@ package dat065.mobil_smarthet.bluetooth;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.util.Log;
 
 import org.joda.time.Instant;
@@ -18,14 +19,18 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import dat065.mobil_smarthet.database.SensorDBHandler;
+
 public class BluetoothClient extends Thread implements Runnable{
 
     private BluetoothSocket socket;
     private BluetoothDevice device;
     private InputStream inStream;
     private OutputStream outStream;
+    private SensorDBHandler db;
 
-    public BluetoothClient(BluetoothDevice device) {
+    public BluetoothClient(BluetoothDevice device, Context context) {
+        db = new SensorDBHandler(context,null);
         this.device = device;
         try {
             UUID uuid = UUID.fromString("57e33d1f-c167-4f5a-a94f-5f0c58f49356");
@@ -45,19 +50,21 @@ public class BluetoothClient extends Thread implements Runnable{
         byte[] buffer = new byte[1048576];
         int bytes;
 
-        write(getMessage((byte) 0x01, (byte) 0x01, 20000));
+        write(getMessage((byte) 0x01, (byte) 0x01, 22000));
         while (true) {
             try {
                 bytes = inStream.read(buffer);
                 byte[] data= read(buffer,bytes);
 
-                ArrayList<SerializableSensor> s = (ArrayList<SerializableSensor>) deserialize(data);
-
-                Log.i("bt","Sensor: "+s.get(0).getSensor());
-                Log.i("bt","Data count: "+s.get(0).getData().size());
+                ArrayList<SerializableSensor> sensorData = (ArrayList<SerializableSensor>) deserialize(data);
+                for(SerializableSensor s: sensorData ){
+                    Log.i("bt", "Sensor: " + sensorData.get(0).getSensor());
+                    Log.i("bt","Inserting : "+sensorData.get(0).getData().size()+" rows");
+                    db.addData(s);
+                }
+                //write(getMessage((byte) 0x01, (byte) 0x01, 20000));
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
-                break;
             }
         }
     }

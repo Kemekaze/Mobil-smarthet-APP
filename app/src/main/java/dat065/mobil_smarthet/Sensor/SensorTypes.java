@@ -1,4 +1,4 @@
-package dat065.mobil_smarthet.Sensor;
+package dat065.mobil_smarthet.sensor;
 
 /**
  * Created by backevik on 16-02-11.

@@ -29,11 +29,11 @@ import org.joda.time.DateTime;
 
 import dat065.mobil_smarthet.bluetooth.BluetoothClient;
 
-import dat065.mobil_smarthet.Alarm.AlarmActivity;
-import dat065.mobil_smarthet.Sensor.FavoriteSensors;
-import dat065.mobil_smarthet.Sensor.GraphActivity;
-import dat065.mobil_smarthet.Sensor.Sensor;
-import dat065.mobil_smarthet.Sensor.SensorTypes;
+import dat065.mobil_smarthet.alarm.AlarmActivity;
+import dat065.mobil_smarthet.sensor.FavoriteSensors;
+import dat065.mobil_smarthet.sensor.GraphActivity;
+import dat065.mobil_smarthet.sensor.Sensor;
+import dat065.mobil_smarthet.sensor.SensorTypes;
 
 
 public class MainActivity extends AppCompatActivity
@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity
                         BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
                         if (btc == null) {
                             Log.i("bt", "Connecting to bluetooth server");
-                            BluetoothClient btc = new BluetoothClient(btServer);
+                            BluetoothClient btc = new BluetoothClient(btServer,getApplicationContext());
                             btc.start();
                         }
                     }
@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity
         bluetoothToggle.setChecked(true);
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(mReceiver, filter);
-        Log.i("bt","Searching for server");
+        Log.i("bt", "Searching for server");
         bluetoothAdapter.startDiscovery();
     }
     /**

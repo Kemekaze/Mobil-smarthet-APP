@@ -1,4 +1,4 @@
-package dat065.mobil_smarthet.Sensor;
+package dat065.mobil_smarthet.sensor;
 
 import android.content.Intent;
 import android.os.Handler;

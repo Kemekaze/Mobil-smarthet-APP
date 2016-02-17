@@ -1,4 +1,4 @@
-package dat065.mobil_smarthet.Alarm;
+package dat065.mobil_smarthet.alarm;
 
 import android.app.Notification;
 import android.app.NotificationManager;

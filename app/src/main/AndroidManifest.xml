@@ -23,17 +23,17 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Sensor.GraphActivity"
+            android:name=".sensor.GraphActivity"
             android:label="GraphActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
-            android:name=".Alarm.AlarmActivity"
+            android:name=".alarm.AlarmActivity"
             android:label="@string/title_activity_alarm"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <receiver android:name=".Alarm.AlarmReceiver"/>
-        <service android:name=".Alarm.RingtoneService"
+        <receiver android:name=".alarm.AlarmReceiver"/>
+        <service android:name=".alarm.RingtoneService"
             android:enabled="true" />
     </application>
 

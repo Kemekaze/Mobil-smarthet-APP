@@ -1,4 +1,4 @@
-package dat065.mobil_smarthet.Sensor;
+package dat065.mobil_smarthet.sensor;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
