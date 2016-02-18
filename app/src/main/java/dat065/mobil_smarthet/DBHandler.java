@@ -48,7 +48,6 @@ public class DBHandler  extends SQLiteOpenHelper {
         db.execSQL(queryAccelerometer);
         db.execSQL(queryLight);
         db.execSQL(queryFavorites);
-        Log.d("DBCREATED", "hej");
     }
 
     @Override

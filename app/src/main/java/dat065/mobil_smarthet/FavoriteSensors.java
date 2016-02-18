@@ -91,6 +91,7 @@ public class FavoriteSensors{
             }else{
                 favoriteOneText.setText(favoriteOne.getMostRelevantData().toString()+" "+favoriteOne.type.toString());
             }
+            favoriteDBHandler.removeFavorite(1);
             favoriteDBHandler.addFavorite(sensor.type,1);
             Log.d("addedFav","");
             return true;
@@ -101,6 +102,7 @@ public class FavoriteSensors{
             }else{
                 favoriteTwoText.setText(favoriteTwo.getMostRelevantData().toString()+" "+favoriteTwo.type.toString());
             }
+            favoriteDBHandler.removeFavorite(2);
             favoriteDBHandler.addFavorite(sensor.type,2);
             return true;
         }else{

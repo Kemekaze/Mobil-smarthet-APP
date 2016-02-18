@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -49,12 +50,12 @@ public class MainActivity extends AppCompatActivity
     private SensorDBHandler sensorDBHandler;
     private FavoriteSensorsDBHandler favoriteSensorsDBHandler;
 
-    FavoriteSensors favoriteSensors;
+    private FavoriteSensors favoriteSensors;
 
-    Sensor temperatureSensor;
-    Sensor lightSensor;
-    Sensor soundSensor;
-    Sensor accelerometerSensor;
+    private Sensor temperatureSensor;
+    private Sensor lightSensor;
+    private Sensor soundSensor;
+    private Sensor accelerometerSensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {		
@@ -102,36 +103,60 @@ public class MainActivity extends AppCompatActivity
         temperatureSensor.addSensorData(new DateTime(2016,2,13,17,0),3);
 
         HashMap<Integer,String> dbCheckMap = new HashMap<>(favoriteSensorsDBHandler.getFavorites());
+        MenuItem item;
         if(dbCheckMap.containsKey(1)){
             switch (dbCheckMap.get(1)){
                 case "temperature":
                     favoriteSensors.favorizeSensor(temperatureSensor);
+                    item = (MenuItem) navigationView.getMenu().findItem(R.id.tempFav);
+                    item.setIcon(R.drawable.switch_on);
+                    tempBool=true;
                     break;
                 case "light":
                     favoriteSensors.favorizeSensor(lightSensor);
+                    item = (MenuItem) navigationView.getMenu().findItem(R.id.lightFav);
+                    item.setIcon(R.drawable.switch_on);
+                    lightBool=true;
                     break;
                 case "sound":
                     favoriteSensors.favorizeSensor(soundSensor);
+                    item = (MenuItem) navigationView.getMenu().findItem(R.id.soundFav);
+                    item.setIcon(R.drawable.switch_on);
+                    soundBool=true;
                     break;
                 case "accelerometer":
                     favoriteSensors.favorizeSensor(accelerometerSensor);
+                    item = (MenuItem) navigationView.getMenu().findItem(R.id.accFav);
+                    item.setIcon(R.drawable.switch_on);
+                    accBool=true;
                     break;
             }
-            Log.d("FetchWorked","");
         }
         if(dbCheckMap.containsKey(2)){
             switch (dbCheckMap.get(2)){
                 case "temperature":
                     favoriteSensors.favorizeSensor(temperatureSensor);
+                    item = (MenuItem) navigationView.getMenu().findItem(R.id.tempFav);
+                    item.setIcon(R.drawable.switch_on);
+                    tempBool=true;
                     break;
                 case "light":
                     favoriteSensors.favorizeSensor(lightSensor);
+                    item = (MenuItem) navigationView.getMenu().findItem(R.id.lightFav);
+                    item.setIcon(R.drawable.switch_on);
+                    lightBool=true;
                     break;
                 case "sound":
                     favoriteSensors.favorizeSensor(soundSensor);
+                    item = (MenuItem) navigationView.getMenu().findItem(R.id.soundFav);
+                    item.setIcon(R.drawable.switch_on);
+                    soundBool=true;
                     break;
                 case "accelerometer":
                     favoriteSensors.favorizeSensor(accelerometerSensor);
+                    item = (MenuItem) navigationView.getMenu().findItem(R.id.accFav);
+                    item.setIcon(R.drawable.switch_on);
+                    accBool=true;
                     break;
             }
         }
