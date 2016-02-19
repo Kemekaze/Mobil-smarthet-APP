@@ -17,22 +17,22 @@ public class DBHandler  extends SQLiteOpenHelper {
     }
 
     String queryTemperatue = "CREATE TABLE "+Database.TEMPERATURE.TABLE + "(" +
-            Database.TEMPERATURE.COLUMN_ID + " DATETIME PRIMARY KEY, " +
+            Database.TEMPERATURE.COLUMN_ID + " TEXT PRIMARY KEY, " +
             Database.TEMPERATURE.COLUMN_VALUE + " DOUBLE " +
             ");";
 
     String querySound = "CREATE TABLE "+Database.SOUND.TABLE + "(" +
-            Database.SOUND.COLUMN_ID + " DATETIME PRIMARY KEY, " +
+            Database.SOUND.COLUMN_ID + " TEXT PRIMARY KEY, " +
             Database.SOUND.COLUMN_VALUE + " DOUBLE " +
             ");";
 
     String queryAccelerometer = "CREATE TABLE "+Database.ACCELEROMETER.TABLE + "(" +
-            Database.ACCELEROMETER.COLUMN_ID + " DATETIME PRIMARY KEY, " +
+            Database.ACCELEROMETER.COLUMN_ID + " TEXT PRIMARY KEY, " +
             Database.ACCELEROMETER.COLUMN_VALUE + " DOUBLE " +
             ");";
 
     String queryLight = "CREATE TABLE "+Database.LIGHT.TABLE + "(" +
-            Database.LIGHT.COLUMN_ID + " DATETIME PRIMARY KEY, " +
+            Database.LIGHT.COLUMN_ID + " TEXT PRIMARY KEY, " +
             Database.LIGHT.COLUMN_VALUE + " DOUBLE " +
             ");";
 

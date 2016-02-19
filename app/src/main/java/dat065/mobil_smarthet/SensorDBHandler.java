@@ -26,6 +26,7 @@ public class SensorDBHandler extends DBHandler {
                 values.put(Database.TEMPERATURE.COLUMN_ID, date.toString());
                 values.put(Database.TEMPERATURE.COLUMN_VALUE, d);
                 db.insert(Database.TEMPERATURE.TABLE,null,values);
+                Log.d("TESTADD","");
                 break;
             case "SOUND":
                 values.put(Database.SOUND.COLUMN_ID, date.toString());
@@ -54,6 +55,7 @@ public class SensorDBHandler extends DBHandler {
             case "TEMPERATURE":
                 query = "SELECT * FROM " + Database.TEMPERATURE.TABLE;
                 c = db.rawQuery(query,null);
+                c.moveToFirst();
                 while(!c.isAfterLast()){
                     String date = c.getString(c.getColumnIndex(Database.TEMPERATURE.COLUMN_ID));
                     DateTime dateTime = DateTime.parse(date);
@@ -66,6 +68,7 @@ public class SensorDBHandler extends DBHandler {
             case "SOUND":
                 query = "SELECT * FROM " + Database.SOUND.TABLE;
                 c = db.rawQuery(query,null);
+                c.moveToFirst();
                 while(!c.isAfterLast()){
                     String date = c.getString(c.getColumnIndex(Database.SOUND.COLUMN_ID));
                     DateTime dateTime = DateTime.parse(date);
@@ -78,6 +81,7 @@ public class SensorDBHandler extends DBHandler {
             case "LIGHT":
                 query = "SELECT * FROM " + Database.LIGHT.TABLE;
                 c = db.rawQuery(query,null);
+                c.moveToFirst();
                 while(!c.isAfterLast()){
                     String date = c.getString(c.getColumnIndex(Database.LIGHT.COLUMN_ID));
                     DateTime dateTime = DateTime.parse(date);
@@ -90,6 +94,7 @@ public class SensorDBHandler extends DBHandler {
             case "ACCELEROMETER":
                 query = "SELECT * FROM " + Database.ACCELEROMETER.TABLE;
                 c = db.rawQuery(query,null);
+                c.moveToFirst();
                 while(!c.isAfterLast()){
                     String date = c.getString(c.getColumnIndex(Database.ACCELEROMETER.COLUMN_ID));
                     DateTime dateTime = DateTime.parse(date);

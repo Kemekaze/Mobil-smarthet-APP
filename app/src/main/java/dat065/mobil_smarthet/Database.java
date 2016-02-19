@@ -10,7 +10,7 @@ public class Database {
     // give it an empty constructor.
     public Database() {}
 
-    public static final int VERSION = 13;
+    public static final int VERSION = 14;
     public static final String DB_NAME = "sensor.db";
     public class TEMPERATURE implements BaseColumns{
         public static final String TABLE = "temperature";
