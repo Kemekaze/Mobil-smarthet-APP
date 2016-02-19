@@ -19,6 +19,7 @@ import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 /**
  * Created by backevik on 16-02-14.
@@ -43,7 +44,7 @@ public class GraphActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             sensor = (Sensor) extras.getSerializable("sensor");
-            Log.d("TEST", sensor.sensorData.toString());
+            Log.d("TEST", sensor.getSensorData().toString());
         }
         graph();
     }
@@ -59,12 +60,13 @@ public class GraphActivity extends AppCompatActivity {
     }
 
     public void graph() {
-        ArrayList<DateTime> dailyData = new ArrayList<DateTime>(sensor.getWeeklyData().keySet());
+        HashMap<DateTime,Double> tempMap = new HashMap<>(sensor.getWeeklyData());
+        ArrayList<DateTime> dailyData = new ArrayList<DateTime>(tempMap.keySet());
         Collections.sort(dailyData);
         int k = 0;
         ArrayList<String> labels = new ArrayList<String>();
         for(DateTime date : dailyData){
-            entries.add(new Entry(sensor.getSensorData().get(date),k));
+            entries.add(new Entry(tempMap.get(date).floatValue(),k));
             labels.add(date.monthOfYear().get()+"/"+date.dayOfMonth().get());
             k++;
         }
@@ -100,25 +102,7 @@ public class GraphActivity extends AppCompatActivity {
         findViewById(R.id.changeScopeButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList<DateTime> dailyData = new ArrayList<DateTime>(sensor.getMonthlyData().keySet());
-                Collections.sort(dailyData);
-                int k = 0;
-                ArrayList<String> labels = new ArrayList<String>();
-                for(DateTime date : dailyData){
-                    entries.add(new Entry(sensor.getSensorData().get(date),k));
-                    labels.add(date.monthOfYear().get()+"/"+date.dayOfMonth().get());
-                    k++;
-                }
-
-                LineDataSet dataset = new LineDataSet(entries, sensor.type.name().toLowerCase() + ", monthly data");
-                dataset.setColor(ColorTemplate.getHoloBlue());
-                dataset.setDrawFilled(true);
-                dataset.setFillColor(ColorTemplate.getHoloBlue());
-                dataset.setLineWidth(6);
-                chart.setDescription(sensor.type.toString().toLowerCase());
-
-                LineData data = new LineData(labels,dataset);
-                chart.setData(data);
+                Toast.makeText(getApplicationContext(),"Change timescope",Toast.LENGTH_SHORT);
             }
         });
     }

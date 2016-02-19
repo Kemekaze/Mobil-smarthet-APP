@@ -18,26 +18,26 @@ import org.joda.time.DateTime;
  */
 public class Sensor implements Serializable{
     SensorTypes type;
-    HashMap<DateTime,Long> sensorData;
+    private HashMap<DateTime,Double> sensorData;
 
     public Sensor(SensorTypes type){
         this.type = type;
         sensorData = new HashMap<>();
     }
 
-    public Map<DateTime,Long> getSensorData(){
+    public Map<DateTime,Double> getSensorData(){
         return sensorData;
     }
 
-    public void addSensorData(long key, long value){
-        sensorData.put(new DateTime(key*1000L),value);
+    public void addSensorData(long key, double value){
+        sensorData.put(new DateTime(key*1000),value);
     }
 
-    public void addSensorData(DateTime date, long value){
+    public void addSensorData(DateTime date, double value){
         sensorData.put(date,value);
     }
 
-    public Long getMostRelevantData(){
+    public Double getMostRelevantData(){
         DateTime currentTime = new DateTime();
         if(sensorData.isEmpty()){
             return null;
@@ -50,20 +50,40 @@ public class Sensor implements Serializable{
         }
     }
 
-    public HashMap<DateTime,Long> getWeeklyData(){
-        DateTime lastWeek = new DateTime(DateTime.now()).minusDays(7);
-        HashMap<DateTime,Long> tempMap = new HashMap<>(sensorData);
-        for(DateTime date : sensorData.keySet()){
-            if(date.isBefore(lastWeek)){
-                tempMap.remove(date);
+    public HashMap<DateTime,Double> getWeeklyData(){
+        HashMap<DateTime,Double> weeklyData = new HashMap<>();
+        ArrayList<ArrayList<Double>> almightyList = new ArrayList<>();
+        for(int i = 0;i<7;i++){
+            almightyList.add(new ArrayList<Double>());
+        }
+        DateTime currentTime = new DateTime(DateTime.now());
+        for(DateTime d : sensorData.keySet()){
+            int divider = 0;
+            double sum = 0;
+            for(int i = 0; i<7;i++){
+                if(d.dayOfYear().get()==currentTime.minusDays(i).dayOfYear().get()){
+                    almightyList.get(i).add(sensorData.get(d));
+                }
             }
         }
-        return tempMap;
+        for(int i = 0; i<almightyList.size();i++){
+            if(almightyList.get(i).isEmpty()){
+                weeklyData.put(currentTime.minusDays(i),0D);
+            }else{
+                double sum = 0;
+                for(int k = 0; k<almightyList.get(i).size();k++){
+                   sum = sum + almightyList.get(i).get(k);
+                }
+                sum = sum / almightyList.get(i).size();
+                weeklyData.put(currentTime.minusDays(i),sum);
+            }
+        }
+        return weeklyData;
     }
 
-    public HashMap<DateTime,Long> getMonthlyData(){
+    public HashMap<DateTime,Double> getMonthlyData(){
         DateTime lastMonth = new DateTime(DateTime.now()).minusMonths(1);
-        HashMap<DateTime,Long> tempMap = new HashMap<>(sensorData);
+        HashMap<DateTime,Double> tempMap = new HashMap<>(sensorData);
         for(DateTime date : sensorData.keySet()){
             if(date.isBefore(lastMonth)){
                 tempMap.remove(date);

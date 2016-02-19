@@ -131,7 +131,7 @@ public class FavoriteSensors{
     }
 
     public void createLineChart(Sensor sensor){
-        if(sensor.sensorData.isEmpty()){
+        if(sensor.getSensorData().isEmpty()){
             Toast.makeText(activity.getApplicationContext(),"No data found",Toast.LENGTH_SHORT);
             return;
         }

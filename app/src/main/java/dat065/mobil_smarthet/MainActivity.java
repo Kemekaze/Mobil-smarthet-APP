@@ -89,18 +89,18 @@ public class MainActivity extends AppCompatActivity
         favoriteSensors = new FavoriteSensors(this,favoriteSensorsDBHandler);
 
         //Test data
-        temperatureSensor.addSensorData(new DateTime(2016,2,2,6,0),5);
-        temperatureSensor.addSensorData(new DateTime(2016,2,3,7,0),7);
-        temperatureSensor.addSensorData(new DateTime(2016,2,4,8,0),14);
-        temperatureSensor.addSensorData(new DateTime(2016,2,5,9,0),4);
-        temperatureSensor.addSensorData(new DateTime(2016,2,6,10,0),1);
-        temperatureSensor.addSensorData(new DateTime(2016,2,7,11,0),0);
-        temperatureSensor.addSensorData(new DateTime(2016,2,8,12,0),22);
-        temperatureSensor.addSensorData(new DateTime(2016,2,9,13,0),14);
-        temperatureSensor.addSensorData(new DateTime(2016,2,10,14,0),13);
-        temperatureSensor.addSensorData(new DateTime(2016,2,11,15,0),7);
-        temperatureSensor.addSensorData(new DateTime(2016,2,12,16,0),5);
-        temperatureSensor.addSensorData(new DateTime(2016,2,13,17,0),3);
+        temperatureSensor.addSensorData(new DateTime(2016,2,11,6,0),5);
+        temperatureSensor.addSensorData(new DateTime(2016,2,11,7,0),7);
+        temperatureSensor.addSensorData(new DateTime(2016,2,12,8,0),14);
+        temperatureSensor.addSensorData(new DateTime(2016,2,13,9,0),4);
+        temperatureSensor.addSensorData(new DateTime(2016,2,14,10,0),1);
+        temperatureSensor.addSensorData(new DateTime(2016,2,14,11,0),0);
+        temperatureSensor.addSensorData(new DateTime(2016,2,15,12,0),22);
+        temperatureSensor.addSensorData(new DateTime(2016,2,16,13,0),14);
+        temperatureSensor.addSensorData(new DateTime(2016,2,16,14,0),13);
+        temperatureSensor.addSensorData(new DateTime(2016,2,19,15,0),7);
+        temperatureSensor.addSensorData(new DateTime(2016,2,19,16,0),5);
+        temperatureSensor.addSensorData(new DateTime(2016,2,19,17,0),3);
 
         HashMap<Integer,String> dbCheckMap = new HashMap<>(favoriteSensorsDBHandler.getFavorites());
         MenuItem item;
