@@ -17,9 +17,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    sourceSets {
+        main {
+            java.srcDirs = ['src/main/java', 'src/main/java/2', 'src/androidTest', 'src/androidTests/java', 'src/tests/java']
+        }
+    }
 }
 
-repositories{
+repositories {
     maven { url "https://jitpack.io" }
 }
 
@@ -30,4 +35,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.0.0'
     compile 'com.android.support:design:23.0.0'
     compile 'joda-time:joda-time:2.8.2'
+    androidTestCompile 'junit:junit:4.12'
+    compile 'junit:junit:4.12'
 }

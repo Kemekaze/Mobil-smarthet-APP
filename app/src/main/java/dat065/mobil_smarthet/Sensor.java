@@ -82,14 +82,34 @@ public class Sensor implements Serializable{
     }
 
     public HashMap<DateTime,Double> getMonthlyData(){
-        DateTime lastMonth = new DateTime(DateTime.now()).minusMonths(1);
-        HashMap<DateTime,Double> tempMap = new HashMap<>(sensorData);
-        for(DateTime date : sensorData.keySet()){
-            if(date.isBefore(lastMonth)){
-                tempMap.remove(date);
+        HashMap<DateTime,Double> monthlyData = new HashMap<>();
+        ArrayList<ArrayList<Double>> almightyList = new ArrayList<>();
+        for(int i = 0;i<30;i++){
+            almightyList.add(new ArrayList<Double>());
+        }
+        DateTime currentTime = new DateTime(DateTime.now());
+        for(DateTime d : sensorData.keySet()){
+            int divider = 0;
+            double sum = 0;
+            for(int i = 0; i<30;i++){
+                if(d.dayOfYear().get()==currentTime.minusDays(i).dayOfYear().get()){
+                    almightyList.get(i).add(sensorData.get(d));
+                }
             }
         }
-        return tempMap;
+        for(int i = 0; i<almightyList.size();i++){
+            if(almightyList.get(i).isEmpty()){
+                monthlyData.put(currentTime.minusDays(i),0D);
+            }else{
+                double sum = 0;
+                for(int k = 0; k<almightyList.get(i).size();k++){
+                    sum = sum + almightyList.get(i).get(k);
+                }
+                sum = sum / almightyList.get(i).size();
+                monthlyData.put(currentTime.minusDays(i),sum);
+            }
+        }
+        return monthlyData;
     }
 
     //Add getWeeklyData

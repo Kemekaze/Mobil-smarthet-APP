@@ -32,15 +32,10 @@
         android:layout_height="wrap_content">
 
         <Button
-            android:id="@+id/backChartButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Go back" />
-        <Button
             android:id="@+id/changeScopeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_gravity="left"
             android:text="Change timescope"/>
 
         <Button

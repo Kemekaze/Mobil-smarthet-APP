@@ -32,4 +32,8 @@
         <item name="colorAccent">@color/colorPrimary</item>
         <item name="android:textColorPrimary">#000000</item>
     </style>
+    <style name="AppCompatAlertScopeStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="android:textColorPrimary">#2196F3</item>
+    </style>
 </resources>
