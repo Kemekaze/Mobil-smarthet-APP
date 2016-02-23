@@ -14,6 +14,7 @@ import dat065.mobil_smarthet.constants.Sensors;
 import dat065.mobil_smarthet.constants.Settings;
 import dat065.mobil_smarthet.database.SensorDBHandler;
 import dat065.mobil_smarthet.database.SettingsDBHandler;
+import dat065.mobil_smarthet.helpers.Helpers;
 
 /**
  * Created by backevik on 16-02-11.
@@ -73,14 +74,13 @@ public class FavoriteSensors{
     public boolean favorizeSensor(Sensors sensor){
         if(favoriteOne==null){
             favoriteOne = sensor;
-            favoriteOneText.setText(dbSensors.getMostRelevantData(sensor) + " " + sensor.getSymbol());
+            favoriteOneText.setText(Helpers.round(dbSensors.getMostRelevantData(sensor), 1) + " " + sensor.getSymbol());
 
             dbSettings.add(new Pair<Settings, String>(Settings.FAV_SENSOR_1, sensor.getName()));
             return true;
         }else if(favoriteTwo==null){
             favoriteTwo = sensor;
-            favoriteTwoText.setText(dbSensors.getMostRelevantData(sensor) + " " + sensor.getSymbol());
-            favoriteTwoText.setText(dbSensors.getMostRelevantData(sensor) +" "+sensor.getSymbol());
+            favoriteTwoText.setText(Helpers.round(dbSensors.getMostRelevantData(sensor),1) + " " + sensor.getSymbol());
 
             dbSettings.add(new Pair<Settings, String>(Settings.FAV_SENSOR_2,sensor.getName()));
             return true;
