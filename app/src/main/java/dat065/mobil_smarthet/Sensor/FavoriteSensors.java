@@ -103,7 +103,7 @@ public class FavoriteSensors{
 
     public void createLineChart(Sensors sensor){
         final Intent i = new Intent(activity.getApplicationContext(), GraphActivity.class);
-        i.putExtra("sensor", sensor);
+        i.putExtra("sensor", sensor.getId());
         i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         Runnable runnable = new Runnable() {
             @Override

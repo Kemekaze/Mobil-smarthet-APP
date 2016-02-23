@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -21,7 +20,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-import dat065.mobil_smarthet.sensor.Sensor;
+import dat065.mobil_smarthet.constants.Sensors;
+import dat065.mobil_smarthet.database.SensorDBHandler;
 
 /**
  * Created by backevik on 16-02-14.
@@ -29,12 +29,12 @@ import dat065.mobil_smarthet.sensor.Sensor;
 public class GraphActivity extends AppCompatActivity {
 
     private ArrayList<Entry> entries;
-    private Sensor sensor;
+    private Sensors sensor;
     private LineChart chart;
-
+    private SensorDBHandler sensorDBHandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        sensorDBHandler = new SensorDBHandler(this,null);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.line_chart);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -45,10 +45,10 @@ public class GraphActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            sensor = (Sensor) extras.getSerializable("sensor");
-            Log.d("TEST", sensor.getSensorData().toString());
+            sensor = Sensors.match((int)extras.getSerializable("sensor"));
+            graph(sensorDBHandler.getWeeklyData(sensor));
         }
-        graph(sensor.getWeeklyData());
+
     }
 
     @Override
@@ -74,13 +74,13 @@ public class GraphActivity extends AppCompatActivity {
             k++;
         }
 
-        LineDataSet dataset = new LineDataSet(entries, sensor.getType().getName());
+        LineDataSet dataset = new LineDataSet(entries, sensor.getName());
         dataset.setColor(ColorTemplate.getHoloBlue());
         dataset.setDrawFilled(true);
         dataset.setFillColor(ColorTemplate.getHoloBlue());
         dataset.setLineWidth(4);
         chart = (LineChart) findViewById(R.id.chart);
-        chart.setDescription(sensor.getType().getName());
+        chart.setDescription(sensor.getName());
 
         LineData data = new LineData(labels,dataset);
         chart.clear();
@@ -107,9 +107,9 @@ public class GraphActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0) {
-                            graph(sensor.getWeeklyData());
+                            graph(sensorDBHandler.getWeeklyData(sensor));
                         } else {
-                            graph(sensor.getMonthlyData());
+                            graph(sensorDBHandler.getMonthlyData(sensor));
                         }
                     }
                 });

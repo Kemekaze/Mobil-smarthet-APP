@@ -24,8 +24,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.joda.time.DateTime;
-
 import dat065.mobil_smarthet.alarm.AlarmActivity;
 import dat065.mobil_smarthet.bluetooth.BluetoothClient;
 import dat065.mobil_smarthet.constants.Sensors;
@@ -85,19 +83,6 @@ public class MainActivity extends AppCompatActivity
         checkBluetooth();
         favoriteSensors = new FavoriteSensors(this,dbSettings);
 
-        //Test data
-        temperatureSensor.addSensorData(new DateTime(2016,2,2,6,0),5);
-        temperatureSensor.addSensorData(new DateTime(2016,2,3,7,0),7);
-        temperatureSensor.addSensorData(new DateTime(2016,2,4,8,0),14);
-        temperatureSensor.addSensorData(new DateTime(2016,2,5,9,0),4);
-        temperatureSensor.addSensorData(new DateTime(2016,2,6,10,0),1);
-        temperatureSensor.addSensorData(new DateTime(2016,2,7,11,0),0);
-        temperatureSensor.addSensorData(new DateTime(2016,2,8,12,0),22);
-        temperatureSensor.addSensorData(new DateTime(2016,2,9,13,0),14);
-        temperatureSensor.addSensorData(new DateTime(2016,2,10,14,0),13);
-        temperatureSensor.addSensorData(new DateTime(2016,2,11,15,0),7);
-        temperatureSensor.addSensorData(new DateTime(2016,2,12,16,0),5);
-        temperatureSensor.addSensorData(new DateTime(2016,2,13,17,0),3);
     }
 
     @Override
@@ -259,50 +244,50 @@ public class MainActivity extends AppCompatActivity
         switch (id){
             case R.id.tempFav:
                 if(!tempBool){
-                    if(favoriteSensors.favorizeSensor(temperatureSensor)){
+                    if(favoriteSensors.favorizeSensor(Sensors.TEMPERATURE)){
                         item.setIcon(R.drawable.switch_on);
                         tempBool=true;
                     }
                 }else{
                     item.setIcon(R.drawable.switch_off);
                     tempBool=false;
-                    favoriteSensors.unfavorizeSensor(temperatureSensor);
+                    favoriteSensors.unfavorizeSensor(Sensors.TEMPERATURE);
                 }
                 break;
             case R.id.soundFav:
                 if(!soundBool){
-                    if(favoriteSensors.favorizeSensor(soundSensor)){
+                    if(favoriteSensors.favorizeSensor(Sensors.AUDIO)){
                         item.setIcon(R.drawable.switch_on);
                         soundBool=true;
                     }
                 }else{
                     item.setIcon(R.drawable.switch_off);
                     soundBool=false;
-                    favoriteSensors.unfavorizeSensor(soundSensor);
+                    favoriteSensors.unfavorizeSensor(Sensors.AUDIO);
                 }
                 break;
             case R.id.lightFav:
                 if(!lightBool){
-                    if(favoriteSensors.favorizeSensor(lightSensor)){
+                    if(favoriteSensors.favorizeSensor(Sensors.LIGHT)){
                         item.setIcon(R.drawable.switch_on);
                         lightBool=true;
                     }
                 }else{
                     item.setIcon(R.drawable.switch_off);
                     lightBool=false;
-                    favoriteSensors.unfavorizeSensor(lightSensor);
+                    favoriteSensors.unfavorizeSensor(Sensors.LIGHT);
                 }
                 break;
             case R.id.accFav:
                 if(!accBool){
-                    if(favoriteSensors.favorizeSensor(accelerometerSensor)){
+                    if(favoriteSensors.favorizeSensor(Sensors.MOTION)){
                         item.setIcon(R.drawable.switch_on);
                         accBool=true;
                     }
                 }else{
                     item.setIcon(R.drawable.switch_off);
                     accBool=false;
-                    favoriteSensors.unfavorizeSensor(accelerometerSensor);
+                    favoriteSensors.unfavorizeSensor(Sensors.MOTION);
                 }
                 break;
         }
