@@ -165,6 +165,7 @@ public class MainActivity extends AppCompatActivity
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(mReceiver, filter);
         Log.i("bt", "Searching for server");
+        bluetoothAdapter.enable();
         bluetoothAdapter.startDiscovery();
     }
     /**
