@@ -29,7 +29,6 @@ import dat065.mobil_smarthet.bluetooth.BluetoothClient;
 import dat065.mobil_smarthet.constants.Sensors;
 import dat065.mobil_smarthet.database.SettingsDBHandler;
 import dat065.mobil_smarthet.sensor.FavoriteSensors;
-import dat065.mobil_smarthet.sensor.Sensor;
 
 
 public class MainActivity extends AppCompatActivity
@@ -49,10 +48,6 @@ public class MainActivity extends AppCompatActivity
 
     FavoriteSensors favoriteSensors;
 
-    Sensor temperatureSensor;
-    Sensor lightSensor;
-    Sensor soundSensor;
-    Sensor accelerometerSensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {		
@@ -66,11 +61,6 @@ public class MainActivity extends AppCompatActivity
         bluetoothToggle = (SwitchCompat) findViewById(R.id.bluetooth_switch);
         bluetoothText = (TextView) findViewById(R.id.bluetooth_text);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        temperatureSensor = new Sensor(Sensors.TEMPERATURE);
-        lightSensor = new Sensor(Sensors.LIGHT);
-        soundSensor = new Sensor(Sensors.AUDIO);
-        accelerometerSensor = new Sensor(Sensors.MOTION);
         dbSettings = new SettingsDBHandler(this,null);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -222,19 +212,19 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         Intent i = new Intent(this, GraphActivity.class);
         if (id == R.id.nav_temperature) {
-            i.putExtra("sensor", temperatureSensor);
+            i.putExtra("sensor", Sensors.TEMPERATURE.getId());
             runActivity(i);
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_sound) {
-            i.putExtra("sensor", soundSensor);
+            i.putExtra("sensor", Sensors.AUDIO.getId());
             startActivity(i);
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_light) {
-            i.putExtra("sensor", lightSensor);
+            i.putExtra("sensor", Sensors.LIGHT.getId());
             startActivity(i);
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_accelerometer) {
-            i.putExtra("sensor", accelerometerSensor);
+            i.putExtra("sensor", Sensors.MOTION.getId());
             startActivity(i);
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_alarm) {
