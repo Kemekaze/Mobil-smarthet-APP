@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity
     private BluetoothAdapter bluetoothAdapter;
     private SwitchCompat bluetoothToggle;
     private TextView bluetoothText;
-    private boolean tempBool=false,lightBool=false,accBool=false, soundBool=false;
+    private boolean tempBool=false,lightBool=false,accBool=false, soundBool=false, co2Bool=false;
     private DrawerLayout drawerLayout;
 
     private BluetoothClient btc = null;
@@ -237,15 +237,19 @@ public class MainActivity extends AppCompatActivity
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_sound) {
             i.putExtra("sensor", Sensors.AUDIO.getId());
-            startActivity(i);
+            runActivity(i);
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_light) {
             i.putExtra("sensor", Sensors.LIGHT.getId());
-            startActivity(i);
+            runActivity(i);
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_accelerometer) {
             i.putExtra("sensor", Sensors.MOTION.getId());
-            startActivity(i);
+            runActivity(i);
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else if (id == R.id.nav_co2) {
+            i.putExtra("sensor", Sensors.CO2.getId());
+            runActivity(i);
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_alarm) {
             startActivity(new Intent(this, AlarmActivity.class));
@@ -298,6 +302,18 @@ public class MainActivity extends AppCompatActivity
                     item.setIcon(R.drawable.switch_off);
                     accBool=false;
                     favoriteSensors.unfavorizeSensor(Sensors.MOTION);
+                }
+                break;
+            case R.id.co2Fav:
+                if(!accBool){
+                    if(favoriteSensors.favorizeSensor(Sensors.CO2)){
+                        item.setIcon(R.drawable.switch_on);
+                        co2Bool=true;
+                    }
+                }else{
+                    item.setIcon(R.drawable.switch_off);
+                    co2Bool=false;
+                    favoriteSensors.unfavorizeSensor(Sensors.CO2);
                 }
                 break;
         }

@@ -27,5 +27,9 @@ public enum SensorTypes {
     public String toString(){
             return "Decibel";
         }
+    },
+    CO2{
+        @Override
+    public String toString() { return "CO2"; }
     }
 }
