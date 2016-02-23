@@ -41,6 +41,7 @@ public class GraphActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -91,7 +92,6 @@ public class GraphActivity extends AppCompatActivity {
                 while(!chart.isFullyZoomedOut()){
                     chart.zoomOut();
                 }
-
             }
         });
 
