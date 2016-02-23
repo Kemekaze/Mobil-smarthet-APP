@@ -46,10 +46,11 @@ public class SettingsDBHandler extends DBHandler {
         return new Pair(Settings.match(key),value);
     }
     public void remove(Settings setting){
-        SQLiteDatabase db = getWritableDatabase();
+        add(new Pair(setting,"null"));
+        /*SQLiteDatabase db = getWritableDatabase();
         int rows = db.delete(Database.SETTINGS.TABLE, "WHERE _key <= ?", new String[]{setting.getKey()});
         db.close();
-        Log.i(TAG, "Removed "+rows+" rows from " + Database.SETTINGS.TABLE);
+        Log.i(TAG, "Removed "+rows+" rows from " + Database.SETTINGS.TABLE);*/
     }
 
 }

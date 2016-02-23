@@ -41,10 +41,13 @@ public class SensorDBHandler extends DBHandler {
     }
 
     public HashMap<DateTime,Double> getData(Sensors sensor){
+        return getData(sensor,"");
+    }
+    private HashMap<DateTime,Double> getData(Sensors sensor, String qPlus){
         HashMap<DateTime,Double> data = new HashMap<DateTime,Double>();
 
         SQLiteDatabase db = getReadableDatabase();
-        String query = "SELECT * FROM " + sensor.getName() + ";";
+        String query = "SELECT * FROM " + sensor.getName() + ((qPlus.equals(""))?";":" "+qPlus+";");
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
         while(!c.isAfterLast()){
@@ -56,6 +59,23 @@ public class SensorDBHandler extends DBHandler {
         Log.i(TAG, "Got " + data.size() + " rows from " + sensor.getName());
         return data;
     }
+    private HashMap<Integer,Double> getCompData(Sensors sensor, int time){
+        HashMap<Integer,Double> data = new HashMap<Integer,Double>();
+
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT * FROM " + sensor.getName() +"WHERE _data > "+time +";";
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+        while(!c.isAfterLast()){
+            data.put(c.getInt(1),c.getDouble(2));
+            c.moveToNext();
+        }
+        c.close();
+        db.close();
+        Log.i(TAG, "Got " + data.size() + " rows from " + sensor.getName());
+        return data;
+    }
+
     private Class<?> getSensorTable(Sensors sensor) throws ClassNotFoundException {
         return Class.forName("dat065.mobil_smarthet.constants."+sensor.getName().toUpperCase());
     }
@@ -72,7 +92,24 @@ public class SensorDBHandler extends DBHandler {
         db.close();
         Log.i(TAG, "Removed "+rows+" rows from " + sensor.getName());
     }
-    public int getLastRecievedTime(){
-        return 0;
+    public Double getMostRelevantData(Sensors sensor){
+        HashMap<DateTime,Double> data = getData(sensor, "LIIMIT 1");
+        return data.get(0);
+    }
+    private HashMap<DateTime,Double> intToDateTime(HashMap<Integer,Double> data){
+        HashMap<DateTime,Double> newData =  new HashMap<DateTime,Double>();
+        for(int d:data.keySet()){
+            newData.put(new DateTime().withMillis(d*1000),data.get(d));
+        }
+        return newData;
+    }
+    public HashMap<DateTime,Double> getWeeklyData(Sensors sensor){
+        long time = DateTime.now().minusDays(7).getMillis()/1000;
+        return intToDateTime(getCompData(sensor, (int) time));
+    }
+
+    public HashMap<DateTime,Double> getMonthlyData(Sensors sensor){
+        long time = DateTime.now().minusMonths(1).getMillis()/1000;
+        return intToDateTime(getCompData(sensor, (int) time));
     }
 }
