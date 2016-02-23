@@ -73,14 +73,14 @@ public class FavoriteSensors{
     public boolean favorizeSensor(Sensors sensor){
         if(favoriteOne==null){
             favoriteOne = sensor;
-            favoriteOneText.setText(dbSensors.getMostRelevantData(sensor).toString() + " " + sensor.getSymbol());
+            favoriteOneText.setText(dbSensors.getMostRelevantData(sensor) + " " + sensor.getSymbol());
 
             dbSettings.add(new Pair<Settings, String>(Settings.FAV_SENSOR_1, sensor.getName()));
             return true;
         }else if(favoriteTwo==null){
             favoriteTwo = sensor;
-            favoriteTwoText.setText(dbSensors.getMostRelevantData(sensor).toString() + " " + sensor.getSymbol());
-            favoriteTwoText.setText(dbSensors.getMostRelevantData(sensor).toString() +" "+sensor.getSymbol());
+            favoriteTwoText.setText(dbSensors.getMostRelevantData(sensor) + " " + sensor.getSymbol());
+            favoriteTwoText.setText(dbSensors.getMostRelevantData(sensor) +" "+sensor.getSymbol());
 
             dbSettings.add(new Pair<Settings, String>(Settings.FAV_SENSOR_2,sensor.getName()));
             return true;

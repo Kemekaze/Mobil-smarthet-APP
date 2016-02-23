@@ -43,15 +43,17 @@ public class SensorDBHandler extends DBHandler {
     public HashMap<DateTime,Double> getData(Sensors sensor){
         return getData(sensor,"");
     }
+
     private HashMap<DateTime,Double> getData(Sensors sensor, String qPlus){
         HashMap<DateTime,Double> data = new HashMap<DateTime,Double>();
 
         SQLiteDatabase db = getReadableDatabase();
         String query = "SELECT * FROM " + sensor.getName() + ((qPlus.equals(""))?";":" "+qPlus+";");
+        Log.d("QueryTest",query);
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
         while(!c.isAfterLast()){
-            data.put(new DateTime().withMillis(c.getInt(1)*1000),c.getDouble(2));
+            data.put(new DateTime().withMillis(c.getInt(0)*1000),c.getDouble(1));
             c.moveToNext();
         }
         c.close();
@@ -63,11 +65,11 @@ public class SensorDBHandler extends DBHandler {
         HashMap<Integer,Double> data = new HashMap<Integer,Double>();
 
         SQLiteDatabase db = getReadableDatabase();
-        String query = "SELECT * FROM " + sensor.getName() +"WHERE _data > "+time +";";
+        String query = "SELECT * FROM " + sensor.getName() +" WHERE _date > "+time +";";
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
         while(!c.isAfterLast()){
-            data.put(c.getInt(1),c.getDouble(2));
+            data.put(c.getInt(0),c.getDouble(1));
             c.moveToNext();
         }
         c.close();
@@ -93,8 +95,11 @@ public class SensorDBHandler extends DBHandler {
         Log.i(TAG, "Removed "+rows+" rows from " + sensor.getName());
     }
     public Double getMostRelevantData(Sensors sensor){
-        HashMap<DateTime,Double> data = getData(sensor, "LIIMIT 1");
-        return data.get(0);
+        HashMap<DateTime,Double> data = getData(sensor, "ORDER BY _date DESC LIMIT 1");
+        for(DateTime d : data.keySet()){
+            return data.get(d);
+        }
+        return 0.0;
     }
     private HashMap<DateTime,Double> intToDateTime(HashMap<Integer,Double> data){
         HashMap<DateTime,Double> newData =  new HashMap<DateTime,Double>();

@@ -2,11 +2,14 @@ package dat065.mobil_smarthet;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
@@ -32,9 +35,10 @@ public class GraphActivity extends AppCompatActivity {
     private Sensors sensor;
     private LineChart chart;
     private SensorDBHandler sensorDBHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        sensorDBHandler = new SensorDBHandler(this,null);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.line_chart);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -43,12 +47,13 @@ public class GraphActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        sensorDBHandler = new SensorDBHandler(this,null);
+
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             sensor = Sensors.match((int)extras.getSerializable("sensor"));
-            graph(sensorDBHandler.getWeeklyData(sensor));
         }
-
+        graph(sensorDBHandler.getWeeklyData(sensor));
     }
 
     @Override
@@ -80,7 +85,7 @@ public class GraphActivity extends AppCompatActivity {
         dataset.setFillColor(ColorTemplate.getHoloBlue());
         dataset.setLineWidth(4);
         chart = (LineChart) findViewById(R.id.chart);
-        chart.setDescription(sensor.getName());
+        chart.setDescription(sensor.getSymbol());
 
         LineData data = new LineData(labels,dataset);
         chart.clear();
@@ -106,9 +111,9 @@ public class GraphActivity extends AppCompatActivity {
                 builder.setItems(scope, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (which == 0) {
+                        if(which==0){
                             graph(sensorDBHandler.getWeeklyData(sensor));
-                        } else {
+                        }else{
                             graph(sensorDBHandler.getMonthlyData(sensor));
                         }
                     }

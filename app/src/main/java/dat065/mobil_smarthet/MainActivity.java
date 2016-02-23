@@ -24,9 +24,16 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.joda.time.DateTime;
+
+import java.util.HashMap;
+import java.util.Random;
+
 import dat065.mobil_smarthet.alarm.AlarmActivity;
 import dat065.mobil_smarthet.bluetooth.BluetoothClient;
+import dat065.mobil_smarthet.bluetooth.SerializableSensor;
 import dat065.mobil_smarthet.constants.Sensors;
+import dat065.mobil_smarthet.database.SensorDBHandler;
 import dat065.mobil_smarthet.database.SettingsDBHandler;
 import dat065.mobil_smarthet.sensor.FavoriteSensors;
 
@@ -44,6 +51,7 @@ public class MainActivity extends AppCompatActivity
     private BluetoothDevice btServer = null;
     private String btServerName = "dat065MS";
     private SettingsDBHandler dbSettings;
+    private SensorDBHandler dbSensor;
 
 
     FavoriteSensors favoriteSensors;
@@ -72,6 +80,16 @@ public class MainActivity extends AppCompatActivity
         //navigationView.setItemIconTintList(null);
         checkBluetooth();
         favoriteSensors = new FavoriteSensors(this,dbSettings);
+        dbSensor = new SensorDBHandler(this,null);
+        //Random rand = new Random();
+        //HashMap<Integer,Double> t = new HashMap<>();
+        //for(int i = 40;i>0;i--){
+        //    Long l = new DateTime(DateTime.now()).minusDays(i).getMillis()/1000;
+         //   t.put(Integer.parseInt(l+""),(double) i);
+        //}
+        //dbSensor.addData(new SerializableSensor(t,1));
+
+
 
     }
 
