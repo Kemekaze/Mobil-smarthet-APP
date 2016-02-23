@@ -7,7 +7,7 @@ import android.provider.BaseColumns;
  */
 public class Database {
 
-    public static final int VERSION = 2;
+    public static final int VERSION = 4;
     public static final String DB_NAME = "mobil_smarthet.db";
 
     public class TEMPERATURE extends Database implements BaseColumns{
@@ -39,6 +39,13 @@ public class Database {
         public static final String COLUMN_ID = "_date";
         public static final String COLUMN_VALUE = "value";
     }
+
+    public class SETTINGS implements BaseColumns{
+        public static final String TABLE = "Settings";
+        public static final String COLUMN_KEY = "_key";
+        public static final String COLUMN_VALUE = "value";
+    }
+
 
     public class FAVORITESENSORS implements BaseColumns{
         public static final String TABLE = "favoritesensors";

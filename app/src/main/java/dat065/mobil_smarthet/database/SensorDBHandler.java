@@ -22,18 +22,22 @@ public class SensorDBHandler extends DBHandler {
     public SensorDBHandler(Context context, SQLiteDatabase.CursorFactory factory) {
         super(context, factory);
     }
-    public void addData(SerializableSensor sensor){
+    public int addData(SerializableSensor sensor){
         Sensors s = Sensors.match(sensor.getSensor());
         ContentValues values =  new ContentValues();
         SQLiteDatabase db = getWritableDatabase();
         HashMap<Integer, Double> data = sensor.getData();
+        int lastTime = -1;
         for (int time : data.keySet()){
-            values.put("_date",new DateTime(time*1000L).toDateTimeISO().toString());
-            values.put("value",data.get(time));
-            db.insert(s.getName(),null,values);
+            values.put("_date", time);
+            values.put("value", data.get(time));
+            //db.insert(s.getName(), null, values);
+            db.insertWithOnConflict(s.getName(),null,values,SQLiteDatabase.CONFLICT_IGNORE);
+            if(time>lastTime) lastTime = time;
         }
         db.close();
-        Log.i(TAG, "Added "+data.size()+" rows into " + s.getName());
+        Log.i(TAG, "Added " + data.size() + " rows into " + s.getName());
+        return lastTime;
     }
 
     public HashMap<DateTime,Double> getData(Sensors sensor){
@@ -44,11 +48,12 @@ public class SensorDBHandler extends DBHandler {
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
         while(!c.isAfterLast()){
-            data.put(new DateTime(c.getString(1)),c.getDouble(2));
+            data.put(new DateTime().withMillis(c.getInt(1)*1000),c.getDouble(2));
             c.moveToNext();
         }
         c.close();
         db.close();
+        Log.i(TAG, "Got " + data.size() + " rows from " + sensor.getName());
         return data;
     }
     private Class<?> getSensorTable(Sensors sensor) throws ClassNotFoundException {
@@ -62,8 +67,12 @@ public class SensorDBHandler extends DBHandler {
 
     public void removeData(Sensors sensor, DateTime deleteTo){
         SQLiteDatabase db = getWritableDatabase();
-        String deleteString = "DELETE * FROM "+sensor.getName()+ "WHERE _date <= "+deleteTo.toDateTimeISO().toString();
-        db.execSQL(deleteString);
+        long millis = deleteTo.getMillis()/1000;
+        int rows = db.delete(sensor.getName(),"_date <= ?",new String[]{(String.valueOf((int)millis))});
         db.close();
+        Log.i(TAG, "Removed "+rows+" rows from " + sensor.getName());
+    }
+    public int getLastRecievedTime(){
+        return 0;
     }
 }

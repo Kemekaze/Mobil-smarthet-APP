@@ -20,20 +20,18 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-
 import android.view.View;
-
 import android.widget.TextView;
 import android.widget.Toast;
+
 import org.joda.time.DateTime;
 
-import dat065.mobil_smarthet.bluetooth.BluetoothClient;
-
 import dat065.mobil_smarthet.alarm.AlarmActivity;
+import dat065.mobil_smarthet.bluetooth.BluetoothClient;
+import dat065.mobil_smarthet.constants.Sensors;
+import dat065.mobil_smarthet.database.SettingsDBHandler;
 import dat065.mobil_smarthet.sensor.FavoriteSensors;
-import dat065.mobil_smarthet.sensor.GraphActivity;
 import dat065.mobil_smarthet.sensor.Sensor;
-import dat065.mobil_smarthet.sensor.SensorTypes;
 
 
 public class MainActivity extends AppCompatActivity
@@ -48,6 +46,8 @@ public class MainActivity extends AppCompatActivity
     private BluetoothClient btc = null;
     private BluetoothDevice btServer = null;
     private String btServerName = "dat065MS";
+    private SettingsDBHandler dbSettings;
+
 
     FavoriteSensors favoriteSensors;
 
@@ -69,10 +69,11 @@ public class MainActivity extends AppCompatActivity
         bluetoothText = (TextView) findViewById(R.id.bluetooth_text);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        temperatureSensor = new Sensor(SensorTypes.TEMPERATURE);
-        lightSensor = new Sensor(SensorTypes.LIGHT);
-        soundSensor = new Sensor(SensorTypes.SOUND);
-        accelerometerSensor = new Sensor(SensorTypes.ACCELEROMETER);
+        temperatureSensor = new Sensor(Sensors.TEMPERATURE);
+        lightSensor = new Sensor(Sensors.LIGHT);
+        soundSensor = new Sensor(Sensors.AUDIO);
+        accelerometerSensor = new Sensor(Sensors.MOTION);
+        dbSettings = new SettingsDBHandler(this,null);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         //navigationView.setItemIconTintList(null);
         checkBluetooth();
-        favoriteSensors = new FavoriteSensors(this);
+        favoriteSensors = new FavoriteSensors(this,dbSettings);
 
         //Test data
         temperatureSensor.addSensorData(new DateTime(2016,2,2,6,0),5);

@@ -2,6 +2,7 @@ package dat065.mobil_smarthet.sensor;
 
 import android.content.Intent;
 import android.os.Handler;
+import android.util.Pair;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -10,8 +11,11 @@ import com.github.mikephil.charting.data.Entry;
 
 import java.util.ArrayList;
 
+import dat065.mobil_smarthet.GraphActivity;
 import dat065.mobil_smarthet.MainActivity;
 import dat065.mobil_smarthet.R;
+import dat065.mobil_smarthet.constants.Settings;
+import dat065.mobil_smarthet.database.SettingsDBHandler;
 
 /**
  * Created by backevik on 16-02-11.
@@ -28,10 +32,11 @@ public class FavoriteSensors{
     private ArrayList<Entry> entries;
 
     private Handler handler;
+    private SettingsDBHandler dbSettings;
 
-
-    public FavoriteSensors(final MainActivity activity){
+    public FavoriteSensors(final MainActivity activity, SettingsDBHandler dbSettings){
         this.activity = activity;
+        this.dbSettings = dbSettings;
         favoriteOneText = (TextView) this.activity.findViewById(R.id.sensorTextOne);
         favoriteTwoText = (TextView) this.activity.findViewById(R.id.sensorTextTwo);
 
@@ -69,16 +74,18 @@ public class FavoriteSensors{
             if(favoriteOne.getMostRelevantData()==null){
                 favoriteOneText.setText("No data");
             }else{
-                favoriteOneText.setText(favoriteOne.getMostRelevantData().toString()+" "+favoriteOne.type.toString());
+                favoriteOneText.setText(favoriteOne.getMostRelevantData().toString() + " " + favoriteOne.getType().getSymbol());
             }
+            dbSettings.add(new Pair<Settings, String>(Settings.FAV_SENSOR_1,sensor.getType().getName()));
             return true;
         }else if(favoriteTwo==null){
             favoriteTwo = sensor;
             if(favoriteTwo.getMostRelevantData()==null){
                 favoriteTwoText.setText("No data");
             }else{
-                favoriteTwoText.setText(favoriteTwo.getMostRelevantData().toString()+" "+favoriteTwo.type.toString());
+                favoriteTwoText.setText(favoriteTwo.getMostRelevantData().toString()+" "+favoriteTwo.getType().getSymbol());
             }
+            dbSettings.add(new Pair<Settings, String>(Settings.FAV_SENSOR_2,sensor.getType().getName()));
             return true;
         }else{
             Toast.makeText(activity.getApplicationContext(),"You can't have more than 2 favorized sensors!", Toast.LENGTH_SHORT).show();
@@ -94,17 +101,17 @@ public class FavoriteSensors{
     }
 
     public void unfavorizeSensor(Sensor sensor){
-        if(favoriteOne.type == sensor.type){
+        if(favoriteOne.getType().equals(sensor.getType())){
             favoriteOne = null;
             favoriteOneText.setText("Unset");
-        }else if(favoriteTwo.type == sensor.type){
+        }else if(favoriteTwo.getType().equals(sensor.getType())){
             favoriteTwo = null;
             favoriteTwoText.setText("Unset");
         }
     }
 
     public void createLineChart(Sensor sensor){
-        if(sensor.sensorData.isEmpty()){
+        if(sensor.getSensorData().isEmpty()){
             Toast.makeText(activity.getApplicationContext(),"No data found",Toast.LENGTH_SHORT);
             return;
         }

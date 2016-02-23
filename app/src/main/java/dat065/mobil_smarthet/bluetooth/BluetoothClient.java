@@ -5,7 +5,9 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.util.Log;
+import android.util.Pair;
 
+import org.joda.time.DateTime;
 import org.joda.time.Instant;
 
 import java.io.ByteArrayInputStream;
@@ -17,9 +19,13 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.UUID;
 
+import dat065.mobil_smarthet.constants.Sensors;
+import dat065.mobil_smarthet.constants.Settings;
 import dat065.mobil_smarthet.database.SensorDBHandler;
+import dat065.mobil_smarthet.database.SettingsDBHandler;
 
 public class BluetoothClient extends Thread implements Runnable{
 
@@ -27,10 +33,15 @@ public class BluetoothClient extends Thread implements Runnable{
     private BluetoothDevice device;
     private InputStream inStream;
     private OutputStream outStream;
-    private SensorDBHandler db;
-
+    private SensorDBHandler dbSensors;
+    private SettingsDBHandler dbSettings;
+    private byte[] lastMessage;
+    private boolean isRunning = true;
     public BluetoothClient(BluetoothDevice device, Context context) {
-        db = new SensorDBHandler(context,null);
+        dbSensors = new SensorDBHandler(context,null);
+        dbSettings = new SettingsDBHandler(context,null);
+
+
         this.device = device;
         try {
             UUID uuid = UUID.fromString("57e33d1f-c167-4f5a-a94f-5f0c58f49356");
@@ -47,22 +58,56 @@ public class BluetoothClient extends Thread implements Runnable{
     }
     public void run() {
         Log.i("bt", "running");
-        byte[] buffer = new byte[1048576];
+        byte[] buffer = new byte[1048576];// ~1 MB
         int bytes;
 
-        write(getMessage((byte) 0x01, (byte) 0x01, 22000));
-        while (true) {
+        /*
+        * BEGIN
+        * TEST
+        * */
+        dbSettings.add(new Pair<Settings, String>(Settings.LAST_SENSOR_TIME,"0"));
+        dbSensors.removeData(Sensors.TEMPERATURE, DateTime.now());
+         /*
+        * END
+        * TEST
+        * */
+
+
+
+        String stringTime = dbSettings.get(Settings.LAST_SENSOR_TIME).second;
+        int lastDataTime = (!stringTime.equals(""))?Integer.parseInt(stringTime): 0;
+        byte[] data = null;
+        while (isRunning) {
             try {
-                bytes = inStream.read(buffer);
-                byte[] data= read(buffer,bytes);
+                byte[] message = getMessage((byte) 0xFF, (byte) 0xFF, lastDataTime);
+                write(message);
+                try{
+                    bytes = inStream.read(buffer);
+                    data= read(buffer, bytes);
+                }catch(NegativeArraySizeException| IOException e){
+                    Log.i("bt","Server disconnected");
+                    isRunning = false;
+                    break;
+                }
 
                 ArrayList<SerializableSensor> sensorData = (ArrayList<SerializableSensor>) deserialize(data);
-                for(SerializableSensor s: sensorData ){
-                    Log.i("bt", "Sensor: " + sensorData.get(0).getSensor());
-                    Log.i("bt","Inserting : "+sensorData.get(0).getData().size()+" rows");
-                    db.addData(s);
+
+                int[] times = new int[sensorData.size()];
+                for(int i =0 ;i< sensorData.size(); i++){
+                    int time = dbSensors.addData(sensorData.get(i));
+                    times[i] = time;
                 }
-                //write(getMessage((byte) 0x01, (byte) 0x01, 20000));
+                Arrays.sort(times);
+                if(times[0]>lastDataTime) {
+                    lastDataTime = times[0];
+                    dbSettings.add(new Pair(Settings.LAST_SENSOR_TIME, String.valueOf(lastDataTime)));
+                }
+                lastMessage = message;
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
@@ -76,7 +121,7 @@ public class BluetoothClient extends Thread implements Runnable{
         Log.i("bt", "Recieved: " + bytes);
         return rtnArr;
     }
-    public void write(byte[] bytes) {
+    private void write(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
         for (byte b : bytes) {
             sb.append(String.format("%02X ", b));
@@ -91,9 +136,15 @@ public class BluetoothClient extends Thread implements Runnable{
             socket.close();
         } catch (IOException e) { }
     }
-    private byte[] getMessage(byte type, byte sensor, int ago){
-        byte[] time = getCurrentUnixTimeByte(ago);
+
+    private byte[] getMessage(byte type, byte sensor, int intTime){
+        byte[] time = getUnixTimeByte(intTime);
         return new byte[]{type, sensor, time[0], time[1], time[2], time[3]};
+    }
+    private int getDiff(int time){
+        long now = Instant.now().getMillis()/1000;
+        int diff = ((int)now) - time;
+        return diff;
     }
     public byte[] getUnixTimeByte(int time){
         Log.i("bt", "time: "+time);

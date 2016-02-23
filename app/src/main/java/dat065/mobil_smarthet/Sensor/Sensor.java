@@ -1,26 +1,33 @@
 package dat065.mobil_smarthet.sensor;
 
+import org.joda.time.DateTime;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import org.joda.time.DateTime;
+
+import dat065.mobil_smarthet.constants.Sensors;
 
 /**
  * Created by backevik on 16-02-11.
  */
 public class Sensor implements Serializable{
-    SensorTypes type;
-    HashMap<DateTime,Long> sensorData;
+    private Sensors type;
+    private HashMap<DateTime,Long> sensorData;
 
-    public Sensor(SensorTypes type){
+    public Sensor(Sensors type){
         this.type = type;
         sensorData = new HashMap<>();
     }
 
     public Map<DateTime,Long> getSensorData(){
         return sensorData;
+    }
+
+    public Sensors getType(){
+        return type;
     }
 
     public void addSensorData(long key, long value){
