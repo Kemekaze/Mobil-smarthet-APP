@@ -7,7 +7,6 @@ import android.content.Context;
 import android.util.Log;
 import android.util.Pair;
 
-import org.joda.time.DateTime;
 import org.joda.time.Instant;
 
 import java.io.ByteArrayInputStream;
@@ -22,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
 
-import dat065.mobil_smarthet.constants.Sensors;
 import dat065.mobil_smarthet.constants.Settings;
 import dat065.mobil_smarthet.database.SensorDBHandler;
 import dat065.mobil_smarthet.database.SettingsDBHandler;
@@ -60,20 +58,6 @@ public class BluetoothClient extends Thread implements Runnable{
         Log.i("bt", "running");
         byte[] buffer = new byte[1048576];// ~1 MB
         int bytes;
-
-        /*
-        * BEGIN
-        * TEST
-        * */
-        dbSettings.add(new Pair<Settings, String>(Settings.LAST_SENSOR_TIME,"0"));
-        dbSensors.removeData(Sensors.TEMPERATURE, DateTime.now());
-         /*
-        * END
-        * TEST
-        * */
-
-
-
         String stringTime = dbSettings.get(Settings.LAST_SENSOR_TIME).second;
         int lastDataTime = (!stringTime.equals(""))?Integer.parseInt(stringTime): 0;
         byte[] data = null;
@@ -132,6 +116,7 @@ public class BluetoothClient extends Thread implements Runnable{
         } catch (IOException e) { }
     }
     public void cancel() {
+        isRunning = false;
         try {
             socket.close();
         } catch (IOException e) { }

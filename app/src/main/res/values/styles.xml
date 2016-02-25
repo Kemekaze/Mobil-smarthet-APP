@@ -24,8 +24,12 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="dialog_animation">
-        <item name="android:windowEnterAnimation">@anim/translate_left_side</item>
-        <item name="android:windowExitAnimation">@anim/translate_right_side</item>
+        <item name="android:windowEnterAnimation">@anim/scale_up</item>
+        <item name="android:windowExitAnimation">@anim/scale_down</item>
+    </style>
+    <style name="dialog_left_bottom_anim">
+        <item name="android:windowEnterAnimation">@anim/bottom_left_up</item>
+        <item name="android:windowExitAnimation">@anim/bottom_left_down</item>
     </style>
 
     <style name="AppCompatAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
@@ -34,6 +38,6 @@
     </style>
     <style name="AppCompatAlertScopeStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorAccent">@color/colorPrimary</item>
-        <item name="android:textColorPrimary">#2196F3</item>
+        <item name="android:textColorPrimary">@color/colorPrimary</item>
     </style>
 </resources>
