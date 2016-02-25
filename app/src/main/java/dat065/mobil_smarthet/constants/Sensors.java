@@ -1,7 +1,7 @@
 package dat065.mobil_smarthet.constants;
 
 public enum Sensors{
-    TEMPERATURE(1,"Temperature","\\u2103"),// Symobl för celsius
+    TEMPERATURE(1,"Temperature","\u2103"),// Symobl för celsius
     LIGHT(2,"Light","lx"),
     AUDIO(3,"Audio","dB"),
     CO2(4,"C02","ppm"),
