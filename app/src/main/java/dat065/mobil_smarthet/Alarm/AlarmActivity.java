@@ -14,11 +14,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.TimePicker;
-
 import java.util.Calendar;
-
 import dat065.mobil_smarthet.R;
 
+/**
+ * This class is used to create the alarm activity. It is communicating
+ * with the AlarmReceiver to send out messages about whether or not the alarm
+ * is turned on. The TimePicker is created which represents the visual part
+ * of the alarm clock.
+ *
+ * @author Kevin H Griffith
+ * @version 2016-02-25
+ */
 public class AlarmActivity extends AppCompatActivity {
 
     //to make alarm manager
@@ -48,6 +55,12 @@ public class AlarmActivity extends AppCompatActivity {
         timePicker.setIs24HourView(true);
     }
 
+    /**
+     * Handles button click events, i.e one button to set the alarm and
+     * another one to turn it off.
+     *
+     * @param view  View of button that has been selected.
+     */
     @TargetApi(Build.VERSION_CODES.M)
     public void onClickListener(View view) {
         if(view.getId() == R.id.alarm_on) {
@@ -75,6 +88,13 @@ public class AlarmActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Handles click events. This method is called whenever the user selects an item
+     * from the options menu, (includes action items in the app bar).
+     *
+     * @param item  MenuItem that has been selected.
+     * @return      true or false whether or not the menu item has been handled successfully.
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();

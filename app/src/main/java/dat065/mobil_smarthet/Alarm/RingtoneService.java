@@ -12,7 +12,12 @@ import android.support.v4.app.NotificationCompat;
 import dat065.mobil_smarthet.R;
 
 /**
- * Created by Griffith on 2016-02-17.
+ * Handles the events of turning on or off the alarm.
+ * It includes a media player that plays a tune/song when
+ * the alarm clock goes off.
+ *
+ * @author Kevin H Griffith
+ * @version 2016-02-25
  */
 public class RingtoneService extends Service {
 
@@ -23,6 +28,19 @@ public class RingtoneService extends Service {
         return null;
     }
 
+    /**
+     * Called by the AlarmReceiver by calling startService(Intent).
+     * It checks whether the extended data prompts to turn on or off
+     * the alarm clock.
+     *
+     * @param intent    The Intent supplied to startService(Intent).
+     * @param flags     Additional data about this start request.
+     * @param startId   A unique integer representing this specific
+     *                  request to start.
+     * @return          Returns a int value that indicates what
+     *                  semantics the system should use for the
+     *                  service's current started state.
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
@@ -56,6 +74,10 @@ public class RingtoneService extends Service {
         return START_NOT_STICKY;
     }
 
+    /**
+     * Sets up the notification that is being displayed whenever
+     * the alarm goes off.
+     */
     public void setupNotification() {
         Intent intentMain = new Intent(this, AlarmActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intentMain, 0);
