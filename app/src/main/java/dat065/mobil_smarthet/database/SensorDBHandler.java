@@ -53,7 +53,7 @@ public class SensorDBHandler extends DBHandler {
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
         while(!c.isAfterLast()){
-            data.put(new DateTime().withMillis(c.getInt(0)*1000),c.getDouble(1));
+            data.put(new DateTime().withMillis(c.getInt(0) * 1000),c.getDouble(1));
             c.moveToNext();
         }
         c.close();
@@ -108,13 +108,38 @@ public class SensorDBHandler extends DBHandler {
         }
         return newData;
     }
+
+    private HashMap<DateTime,Double> intToDateTime(HashMap<Integer,Double> data, int limit){
+        if(limit<2) return intToDateTime(data);
+        HashMap<DateTime,Double> newData =  new HashMap<DateTime,Double>();
+        HashMap<Integer,Double> meanData = new HashMap<Integer,Double>();
+        int counter = 0;
+        for(int timeKey:data.keySet()){
+            ++counter;
+            meanData.put(timeKey, data.get(timeKey));
+            if(counter%limit == 0){
+                double val = 0;
+                for (int meanKey : meanData.keySet()) {
+                    val += meanData.get(meanKey);
+                }
+                newData.put(new DateTime().withMillis(timeKey*1000L),val/limit);
+                meanData.clear();
+            }
+        }
+        return newData;
+    }
     public HashMap<DateTime,Double> getWeeklyData(Sensors sensor){
         long time = DateTime.now().minusDays(7).getMillis()/1000;
         return intToDateTime(getCompData(sensor, (int) time));
     }
 
     public HashMap<DateTime,Double> getMonthlyData(Sensors sensor){
+
         long time = DateTime.now().minusMonths(1).getMillis()/1000;
-        return intToDateTime(getCompData(sensor, (int) time));
+        HashMap<Integer,Double> data = getCompData(sensor, (int) time);
+        int limiter = 100;
+        int limit = (data.size()-(data.size())%limiter)/limiter;
+        Log.i("db","Size: "+data.size()+" limit: "+limit);
+        return intToDateTime(getCompData(sensor, (int) time),limit);
     }
 }
