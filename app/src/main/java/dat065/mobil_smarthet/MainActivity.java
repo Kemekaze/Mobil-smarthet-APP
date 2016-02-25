@@ -169,7 +169,8 @@ public class MainActivity extends AppCompatActivity
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(mReceiver, filter);
         Log.i("bt", "Searching for server");
-        bluetoothAdapter.enable();
+        if(!bluetoothAdapter.isEnabled())
+            bluetoothAdapter.enable();
         bluetoothAdapter.startDiscovery();
     }
     /**
@@ -206,7 +207,11 @@ public class MainActivity extends AppCompatActivity
                 break;
             case 2:
                 menu.getItem(0).setIcon(R.drawable.ic_bluetooth_disabled_white_48dp);
-                bluetoothAdapter.disable();
+                if(bluetoothAdapter.isEnabled()){
+                    bluetoothAdapter.cancelDiscovery();
+                    bluetoothAdapter.disable();
+                }
+
                 if(btc != null)btc.cancel();
                 btStatus = false;
                 break;
