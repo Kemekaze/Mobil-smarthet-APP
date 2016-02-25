@@ -75,15 +75,14 @@ public class GraphActivity extends AppCompatActivity {
         ArrayList<String> labels = new ArrayList<String>();
         for(DateTime date : dailyData){
             entries.add(new Entry(tempMap.get(date).floatValue(),k));
-            labels.add(date.dayOfMonth().get()+"/"+date.monthOfYear().get());
-            Log.d("AddedTime",date.toString());
+            labels.add(date.dayOfMonth().get() + "/" + date.monthOfYear().get());
             k++;
         }
 
         LineDataSet dataset = new LineDataSet(entries, sensor.getName());
-        dataset.setColor(ColorTemplate.getHoloBlue());
+        dataset.setColor(ColorTemplate.rgb("#4CAF50"));
         dataset.setDrawFilled(true);
-        dataset.setFillColor(ColorTemplate.getHoloBlue());
+        dataset.setFillColor(ColorTemplate.rgb("#4CAF50"));
         dataset.setLineWidth(4);
         chart = (LineChart) findViewById(R.id.chart);
         chart.setDescription(sensor.getSymbol());
@@ -120,7 +119,7 @@ public class GraphActivity extends AppCompatActivity {
                     }
                 });
                 scopeDialog = builder.create();
-                scopeDialog.getWindow().getAttributes().windowAnimations = R.style.dialog_animation;
+                scopeDialog.getWindow().getAttributes().windowAnimations = R.style.dialog_left_bottom_anim;
                 scopeDialog.show();
             }
         });
