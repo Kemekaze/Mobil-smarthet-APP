@@ -104,7 +104,7 @@ public class SensorDBHandler extends DBHandler {
     private HashMap<DateTime,Double> intToDateTime(HashMap<Integer,Double> data){
         HashMap<DateTime,Double> newData =  new HashMap<DateTime,Double>();
         for(int d:data.keySet()){
-            newData.put(new DateTime().withMillis(d*1000),data.get(d));
+            newData.put(new DateTime().withMillis(d*1000L),data.get(d));
         }
         return newData;
     }

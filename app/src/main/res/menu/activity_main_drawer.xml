@@ -20,6 +20,10 @@
                     android:id="@+id/nav_accelerometer"
                     android:icon="@drawable/ic_directions_run_black_48dp"
                     android:title="Accelerometer" />
+                <item
+                    android:id="@+id/nav_co2"
+                    android:icon="@drawable/ic_nature_people_black_48dp"
+                    android:title="CO2" />
             </group>
         </menu>
     </item>
@@ -42,6 +46,10 @@
                     android:id="@+id/accFav"
                     android:icon="@drawable/switch_off"
                     android:title="Accelerometer" />
+                <item
+                    android:id="@+id/co2Fav"
+                    android:icon="@drawable/switch_off"
+                    android:title="CO2" />
         </menu>
     </item>
     <item android:title="Other">

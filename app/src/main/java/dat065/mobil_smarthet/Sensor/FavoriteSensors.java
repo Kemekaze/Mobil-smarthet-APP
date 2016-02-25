@@ -67,10 +67,6 @@ public class FavoriteSensors{
         });
     }
 
-
-
-
-
     public boolean favorizeSensor(Sensors sensor){
         if(favoriteOne==null){
             favoriteOne = sensor;

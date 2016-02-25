@@ -4,13 +4,12 @@
     android:id="@+id/sensorLayoutTwo"
     android:layout_height="match_parent">
 
-    <TextView
+    <Button
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
         android:id="@+id/sensorTextTwo"
         android:clickable="true"
         android:text="Unset"
-        android:textColor="@color/background_material_dark"
         android:textSize="24dp"/>
 </LinearLayout>

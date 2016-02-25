@@ -26,12 +26,13 @@
             android:name=".GraphActivity"
             android:label="GraphActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".alarm.AlarmActivity"
             android:label="@string/title_activity_alarm"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleTop"/>
         <receiver android:name=".alarm.AlarmReceiver"/>
         <service android:name=".alarm.RingtoneService"
             android:enabled="true" />

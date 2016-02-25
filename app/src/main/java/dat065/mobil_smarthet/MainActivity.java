@@ -12,17 +12,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import org.joda.time.DateTime;
 
@@ -42,17 +40,17 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private BluetoothAdapter bluetoothAdapter;
-    private SwitchCompat bluetoothToggle;
-    private TextView bluetoothText;
-    private boolean tempBool=false,lightBool=false,accBool=false, soundBool=false;
+    private boolean tempBool=false,lightBool=false,accBool=false, soundBool=false, co2Bool=false;
     private DrawerLayout drawerLayout;
-
+    private SectionsAdapter sectionsAdapter;
+    private ViewPager viewPager;
     private BluetoothClient btc = null;
     private BluetoothDevice btServer = null;
     private String btServerName = "dat065MS";
+    private boolean btStatus;
     private SettingsDBHandler dbSettings;
     private SensorDBHandler dbSensor;
-
+    private Menu menu;
 
     FavoriteSensors favoriteSensors;
 
@@ -64,10 +62,15 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        sectionsAdapter = new SectionsAdapter(getSupportFragmentManager());
+
+        // Set up the ViewPager with the sections adapter.
+        viewPager = (ViewPager) findViewById(R.id.container);
+        viewPager.setAdapter(sectionsAdapter);
+        btStatus = false;
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        bluetoothToggle = (SwitchCompat) findViewById(R.id.bluetooth_switch);
-        bluetoothText = (TextView) findViewById(R.id.bluetooth_text);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         dbSettings = new SettingsDBHandler(this,null);
 
@@ -81,13 +84,14 @@ public class MainActivity extends AppCompatActivity
         checkBluetooth();
         favoriteSensors = new FavoriteSensors(this,dbSettings);
         dbSensor = new SensorDBHandler(this,null);
-        //Random rand = new Random();
-        //HashMap<Integer,Double> t = new HashMap<>();
-        //for(int i = 40;i>0;i--){
-        //    Long l = new DateTime(DateTime.now()).minusDays(i).getMillis()/1000;
-         //   t.put(Integer.parseInt(l+""),(double) i);
-        //}
-        //dbSensor.addData(new SerializableSensor(t,1));
+        Random rand = new Random();
+        HashMap<Integer,Double> t = new HashMap<>();
+        for(int i = 40;i>0;i--){
+            int r = rand.nextInt(100)+1;
+            Long l = DateTime.now().minusDays(i).getMillis()/1000;
+            t.put(Integer.parseInt(l+""),(double) r);
+        }
+        dbSensor.addData(new SerializableSensor(t,1));
 
 
 
@@ -114,6 +118,7 @@ public class MainActivity extends AppCompatActivity
                         btServer = device;
                         BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
                         if (btc == null) {
+                            onBtConnection(1);
                             Log.i("bt", "Connecting to bluetooth server");
                             BluetoothClient btc = new BluetoothClient(btServer,getApplicationContext());
                             btc.start();
@@ -137,6 +142,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+        this.menu = menu;
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
@@ -160,8 +166,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void activateBluetooth() {
-        bluetoothText.setText("Connected");
-        bluetoothToggle.setChecked(true);
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(mReceiver, filter);
         Log.i("bt", "Searching for server");
@@ -182,19 +186,32 @@ public class MainActivity extends AppCompatActivity
      * Listens on the actions of the bluetooth switch at the home screen.
      * Perform different actions depending on if the state of the switch(on or off).
      *
-     * @param v the View object of the switch
      */
-    public void onToggleClick(View v) {
-        SwitchCompat toggle = (SwitchCompat)v;
-        if(toggle.isChecked()) {
-            //Following line crashes in emulator
-            activateBluetooth();
-            Toast.makeText(this, "Bluetooth 'ON'", Toast.LENGTH_SHORT).show();
-        } else {
-            //Following line crashes in emulator
-            bluetoothAdapter.disable();
-            Toast.makeText(this, "Bluetooth 'OFF'", Toast.LENGTH_SHORT).show();
-            bluetoothText.setText("Not Connected");
+
+    public void onBtConnectionClick(MenuItem item){
+        if(btStatus)
+            onBtConnection(2);
+        else
+            onBtConnection(0);
+    }
+    private void onBtConnection(int status) {
+        switch (status){
+            case 0:
+                btStatus = true;
+                menu.getItem(0).setIcon(R.drawable.ic_bluetooth_searching_white_48dp);
+                activateBluetooth();
+                break;
+            case 1:
+                menu.getItem(0).setIcon(R.drawable.ic_bluetooth_connected_white_48dp);
+                break;
+            case 2:
+                menu.getItem(0).setIcon(R.drawable.ic_bluetooth_disabled_white_48dp);
+                bluetoothAdapter.disable();
+                if(btc != null)btc.cancel();
+                btStatus = false;
+                break;
+            default:
+                break;
         }
     }
     public void checkBluetooth() {
@@ -207,7 +224,7 @@ public class MainActivity extends AppCompatActivity
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             //this crashes on computer, no bluetooth on emulator phone
-                            activateBluetooth();
+                            onBtConnection(0);
                         }
                     }).setIcon(R.drawable.ic_error_outline_black_48dp)
                     .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -218,7 +235,6 @@ public class MainActivity extends AppCompatActivity
             bluetoothDialog = bluetoothDialogBuilder.create();
             bluetoothDialog.getWindow().getAttributes().windowAnimations = R.style.dialog_animation;
             bluetoothDialog.show();
-            bluetoothText.setText("Not Connected");
         } else{
             activateBluetooth();
         }
@@ -236,15 +252,19 @@ public class MainActivity extends AppCompatActivity
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_sound) {
             i.putExtra("sensor", Sensors.AUDIO.getId());
-            startActivity(i);
+            runActivity(i);
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_light) {
             i.putExtra("sensor", Sensors.LIGHT.getId());
-            startActivity(i);
+            runActivity(i);
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_accelerometer) {
             i.putExtra("sensor", Sensors.MOTION.getId());
-            startActivity(i);
+            runActivity(i);
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else if (id == R.id.nav_co2) {
+            i.putExtra("sensor", Sensors.CO2.getId());
+            runActivity(i);
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_alarm) {
             startActivity(new Intent(this, AlarmActivity.class));
@@ -299,6 +319,18 @@ public class MainActivity extends AppCompatActivity
                     favoriteSensors.unfavorizeSensor(Sensors.MOTION);
                 }
                 break;
+            case R.id.co2Fav:
+                if(!accBool){
+                    if(favoriteSensors.favorizeSensor(Sensors.CO2)){
+                        item.setIcon(R.drawable.switch_on);
+                        co2Bool=true;
+                    }
+                }else{
+                    item.setIcon(R.drawable.switch_off);
+                    co2Bool=false;
+                    favoriteSensors.unfavorizeSensor(Sensors.CO2);
+                }
+                break;
         }
         return true;
     }
@@ -323,4 +355,5 @@ public class MainActivity extends AppCompatActivity
         };
         new Thread(runnable).start();
     }
+
 }

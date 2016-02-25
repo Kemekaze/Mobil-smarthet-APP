@@ -75,7 +75,8 @@ public class GraphActivity extends AppCompatActivity {
         ArrayList<String> labels = new ArrayList<String>();
         for(DateTime date : dailyData){
             entries.add(new Entry(tempMap.get(date).floatValue(),k));
-            labels.add(date.monthOfYear().get()+"/"+date.dayOfMonth().get());
+            labels.add(date.dayOfMonth().get()+"/"+date.monthOfYear().get());
+            Log.d("AddedTime",date.toString());
             k++;
         }
 
