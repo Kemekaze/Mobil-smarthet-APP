@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">mobil-smarthet</string>
+    <string name="app_name">Mobil Smarthet</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
     <string name="title_activity_icon">IconActivity</string>
-    <string name="title_activity_alarm">AlarmActivity</string>
+    <string name="title_activity_alarm">Alarm Clock</string>
 </resources>
