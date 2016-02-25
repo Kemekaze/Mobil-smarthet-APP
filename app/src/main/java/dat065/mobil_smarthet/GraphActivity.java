@@ -43,7 +43,6 @@ public class GraphActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-
         sensorDBHandler = new SensorDBHandler(this,null);
 
         Bundle extras = getIntent().getExtras();
@@ -51,6 +50,10 @@ public class GraphActivity extends AppCompatActivity {
             sensor = Sensors.match((int)extras.getSerializable("sensor"));
         }
         graph(sensorDBHandler.getWeeklyData(sensor));
+
+        // How to set the title of the toolbar to chosen sensor??
+        // method below does not work
+        getSupportActionBar().setTitle(sensor.getName());
     }
 
     @Override

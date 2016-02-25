@@ -165,6 +165,9 @@ public class MainActivity extends AppCompatActivity
         return bluetoothAdapter.isEnabled();
     }
 
+    /**
+     * Actives bluetooth.
+     */
     public void activateBluetooth() {
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(mReceiver, filter);
@@ -174,7 +177,7 @@ public class MainActivity extends AppCompatActivity
         bluetoothAdapter.startDiscovery();
     }
     /**
-     * Listens to the alarm button located at the home screen.
+     * Handles event clicks of the alarm button located at the home screen.
      * When called, it starts a new AlarmActivity
      *
      * @param v the alarm button
@@ -219,8 +222,13 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
     }
+
+    /**
+     * Checks whether the bluetooth is on or not. If it is,
+     * do nothing. Else create a AlertDialog that asks the
+     * user if it wants to activate bluetooth.
+     */
     public void checkBluetooth() {
-        //Check if bluetooth is on, if not alert and ask if user want to start
         if(!isBluetoothEnabled()){
             final AlertDialog bluetoothDialog;
             final AlertDialog.Builder bluetoothDialogBuilder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
@@ -340,6 +348,14 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * Starts a new Activity in a new Thread. This is done to
+     * be able to save the choices of favorite sensors if any has
+     * been made and display them again when the home screen is
+     * displayed again.
+     *
+     * @param i     The desired Intent to start
+     */
     private void runActivity(final Intent i) {
         i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         final Handler handler = new Handler();
