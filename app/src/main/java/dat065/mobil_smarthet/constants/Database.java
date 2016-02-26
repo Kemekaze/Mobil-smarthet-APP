@@ -7,7 +7,7 @@ import android.provider.BaseColumns;
  */
 public class Database {
 
-    public static final int VERSION = 11;
+    public static final int VERSION = 12;
     public static final String DB_NAME = "mobil_smarthet.db";
 
     public class TEMPERATURE extends Database implements BaseColumns{

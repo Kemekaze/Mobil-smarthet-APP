@@ -32,7 +32,6 @@ public class AlarmActivity extends AppCompatActivity {
     private AlarmManager alarmManager;
     private TimePicker timePicker;
     private TextView updateText;
-    private Context context;
     private Button alarmOn, alarmOff;
     private PendingIntent pendingIntent;
     private Intent myIntent;

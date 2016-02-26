@@ -56,44 +56,57 @@ public class BluetoothClient extends Thread implements Runnable{
     }
     public void run() {
         Log.i("bt", "running");
-        byte[] buffer = new byte[1048576];// ~1 MB
+        byte[] buffer = new byte[33554432];// ~1 MB
         int bytes;
         String stringTime = dbSettings.get(Settings.LAST_SENSOR_TIME).second;
-        int lastDataTime = (!stringTime.equals(""))?Integer.parseInt(stringTime): 0;
+        long lastDataTime = (!stringTime.equals(""))?Long.parseLong(stringTime): 0;
         byte[] data = null;
+        byte[] tmp = null;
         while (isRunning) {
             try {
-                byte[] message = getMessage((byte) 0xFF, (byte) 0xFF, lastDataTime);
-                write(message);
+                if(data == null) {
+                    byte[] message = getMessage((byte) 0xFF, (byte) 0xFF, lastDataTime);
+                    lastMessage = message;
+                    write(message);
+                }
                 try{
+
                     bytes = inStream.read(buffer);
-                    data= read(buffer, bytes);
+                    tmp = read(buffer, bytes);
+                    if(data != null){
+                        byte[] temp = new byte[data.length+tmp.length];
+                        int len = data.length;
+                        for(int i = 0; i <data.length; i++) {
+                            temp[i] = data[i];
+                        }
+                        for(int i =0;i<tmp.length;i++)
+                              temp[len+i] = tmp[i];
+                        tmp = temp;
+                    }
+
                 }catch(NegativeArraySizeException| IOException e){
                     Log.i("bt","Server disconnected");
                     isRunning = false;
                     break;
                 }
 
-                ArrayList<SerializableSensor> sensorData = (ArrayList<SerializableSensor>) deserialize(data);
-
-                int[] times = new int[sensorData.size()];
+                ArrayList<SerializableSensor> sensorData = (ArrayList<SerializableSensor>) deserialize(tmp);
                 for(int i =0 ;i< sensorData.size(); i++){
-                    int time = dbSensors.addData(sensorData.get(i));
-                    times[i] = time;
+                    long time = dbSensors.addData(sensorData.get(i));
+                    if(time > lastDataTime) lastDataTime = time;
                 }
-                Arrays.sort(times);
-                if(times[0]>lastDataTime) {
-                    lastDataTime = times[0];
-                    dbSettings.add(new Pair(Settings.LAST_SENSOR_TIME, String.valueOf(lastDataTime)));
-                }
-                lastMessage = message;
+                dbSettings.add(new Pair(Settings.LAST_SENSOR_TIME, String.valueOf(lastDataTime)));
+
+
+                data = null;
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
+                Log.i("bt","data not complete!");
+                data = tmp;
             }
         }
     }
@@ -122,28 +135,28 @@ public class BluetoothClient extends Thread implements Runnable{
         } catch (IOException e) { }
     }
 
-    private byte[] getMessage(byte type, byte sensor, int intTime){
-        byte[] time = getUnixTimeByte(intTime);
-        return new byte[]{type, sensor, time[0], time[1], time[2], time[3]};
+    private byte[] getMessage(byte type, byte sensor, long dTime){
+        byte[] time = getUnixTimeByte(dTime);
+        return new byte[]{type, sensor, time[0], time[1], time[2], time[3], time[4], time[5], time[6], time[7]};
     }
-    private int getDiff(int time){
-        long now = Instant.now().getMillis()/1000;
-        int diff = ((int)now) - time;
+    private long getDiff(long time){
+        long now = Instant.now().getMillis();
+        long diff = now - time;
         return diff;
     }
-    public byte[] getUnixTimeByte(int time){
+    public byte[] getUnixTimeByte(long time){
         Log.i("bt", "time: "+time);
-        ByteBuffer b = ByteBuffer.allocate(Integer.SIZE);
-        b.putInt(time);
+        ByteBuffer b = ByteBuffer.allocate(Long.SIZE);
+        b.putLong(time);
         return b.array();
     }
     public byte[] getCurrentUnixTimeByte(){
         return getCurrentUnixTimeByte(0);
     }
-    public byte[] getCurrentUnixTimeByte(int ago){
-        long time = Instant.now().minus(ago*1000).getMillis()/1000;
-        Log.i("bt", "time: "+(int)time);
-        return getUnixTimeByte((int)time);
+    public byte[] getCurrentUnixTimeByte(long ago){
+        long time = Instant.now().minus(ago).getMillis();
+        Log.i("bt", "time: "+time);
+        return getUnixTimeByte(time);
     }
     public byte[] serialize(Object obj) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();

@@ -84,14 +84,14 @@ public class MainActivity extends AppCompatActivity
         checkBluetooth();
         favoriteSensors = new FavoriteSensors(this,dbSettings);
         dbSensor = new SensorDBHandler(this,null);
-        Random rand = new Random();
+        /*Random rand = new Random();
         HashMap<Integer,Double> t = new HashMap<>();
         for(int i = 40;i>0;i--){
             int r = rand.nextInt(100)+1;
             Long l = DateTime.now().minusDays(i).getMillis()/1000;
             t.put(Integer.parseInt(l+""),(double) r);
         }
-        dbSensor.addData(new SerializableSensor(t,1));
+        dbSensor.addData(new SerializableSensor(t,1));*/
 
 
 
@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(mReceiver, filter);
         Log.i("bt", "Searching for server");
-        if(!bluetoothAdapter.isEnabled())
+        //if(!bluetoothAdapter.isEnabled())
             bluetoothAdapter.enable();
         bluetoothAdapter.startDiscovery();
     }

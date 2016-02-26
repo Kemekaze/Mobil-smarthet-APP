@@ -23,6 +23,7 @@ public class RingtoneService extends Service {
 
     MediaPlayer mediaPlayer;
     boolean isRunning;
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;

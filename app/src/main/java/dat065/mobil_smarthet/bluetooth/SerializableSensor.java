@@ -7,9 +7,9 @@ public class SerializableSensor implements Serializable{
 
     private static final long serialVersionUID = 197931937334569834L;
     private int sensor;
-    private HashMap<Integer,Double> data;
+    private HashMap<Long,Double> data;
 
-    public SerializableSensor(HashMap<Integer,Double> data, int sensor) throws IndexOutOfBoundsException{
+    public SerializableSensor(HashMap<Long,Double> data, int sensor) throws IndexOutOfBoundsException{
         if( 5 >= sensor && sensor >= 0  )
             this.sensor = sensor;
         else throw new IndexOutOfBoundsException("Sensor value must be between 0-5");
@@ -24,10 +24,10 @@ public class SerializableSensor implements Serializable{
     public void setSensor(int sensor) {
         this.sensor = sensor;
     }
-    public HashMap<Integer, Double> getData() {
+    public HashMap<Long, Double> getData() {
         return data;
     }
-    public void setData(HashMap<Integer, Double> data) {
+    public void setData(HashMap<Long, Double> data) {
         this.data = data;
     }
 

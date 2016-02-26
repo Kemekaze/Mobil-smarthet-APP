@@ -15,27 +15,27 @@ public class DBHandler  extends SQLiteOpenHelper {
     public static final String TAG ="DB";
     /*BEGIN_SENSORS*/
     String queryTemperatue = "CREATE TABLE "+ Database.TEMPERATURE.TABLE + "(" +
-            Database.TEMPERATURE.COLUMN_ID + " INTEGER PRIMARY KEY, " +
+            Database.TEMPERATURE.COLUMN_ID + " BIGINT PRIMARY KEY, " +
             Database.TEMPERATURE.COLUMN_VALUE + " DOUBLE " +
             ");";
 
     String queryLight = "CREATE TABLE "+ Database.LIGHT.TABLE + "(" +
-            Database.LIGHT.COLUMN_ID + " INTEGER PRIMARY KEY, " +
+            Database.LIGHT.COLUMN_ID + " BIGINT PRIMARY KEY, " +
             Database.LIGHT.COLUMN_VALUE + " DOUBLE " +
             ");";
 
     String queryAudio = "CREATE TABLE "+ Database.AUDIO.TABLE + "(" +
-            Database.AUDIO.COLUMN_ID + " INTEGER PRIMARY KEY, " +
+            Database.AUDIO.COLUMN_ID + " BIGINT PRIMARY KEY, " +
             Database.AUDIO.COLUMN_VALUE + " DOUBLE " +
             ");";
 
     String queryCo2 = "CREATE TABLE "+ Database.CO2.TABLE + "(" +
-            Database.CO2.COLUMN_ID + " INTEGER PRIMARY KEY, " +
+            Database.CO2.COLUMN_ID + " BIGINT PRIMARY KEY, " +
             Database.CO2.COLUMN_VALUE + " DOUBLE " +
             ");";
 
     String queryMotion = "CREATE TABLE "+ Database.MOTION.TABLE + "(" +
-            Database.MOTION.COLUMN_ID + " INTEGER PRIMARY KEY, " +
+            Database.MOTION.COLUMN_ID + " BIGINT PRIMARY KEY, " +
             Database.MOTION.COLUMN_VALUE + " DOUBLE " +
             ");";
     /*END_SENSORS*/
