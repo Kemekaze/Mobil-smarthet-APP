@@ -108,6 +108,25 @@ public class SensorDBHandler extends DBHandler {
         }
         return newData;
     }
+    private HashMap<DateTime,Double> intToDateTime(HashMap<Long,Double> data, int limit){
+        if(limit<2) return intToDateTime(data);
+        HashMap<DateTime,Double> newData =  new HashMap<DateTime,Double>();
+        HashMap<Long,Double> meanData = new HashMap<Long,Double>();
+        int counter = 0;
+        for(long timeKey:data.keySet()){
+            ++counter;
+            meanData.put(timeKey, data.get(timeKey));
+            if(counter%limit == 0){
+                double val = 0;
+                for (long meanKey : meanData.keySet()) {
+                    val += meanData.get(meanKey);
+                }
+                newData.put(new DateTime().withMillis(timeKey),val/limit);
+                meanData.clear();
+            }
+        }
+        return newData;
+    }
     public HashMap<DateTime,Double> getWeeklyData(Sensors sensor){
         long time = DateTime.now().minusDays(7).getMillis();
         return intToDateTime(getCompData(sensor, time));
@@ -115,6 +134,10 @@ public class SensorDBHandler extends DBHandler {
 
     public HashMap<DateTime,Double> getMonthlyData(Sensors sensor){
         long time = DateTime.now().minusMonths(1).getMillis();
-        return intToDateTime(getCompData(sensor, time));
+        HashMap<Long,Double> data = getCompData(sensor, (int) time);
+        int limiter = 100;
+        int limit = (data.size()-(data.size())%limiter)/limiter;
+        Log.i("db","Size: "+data.size()+" limit: "+limit);
+        return intToDateTime(getCompData(sensor, (int) time),limit);
     }
 }

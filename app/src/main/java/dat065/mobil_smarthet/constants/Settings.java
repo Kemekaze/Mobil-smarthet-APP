@@ -1,5 +1,7 @@
 package dat065.mobil_smarthet.constants;
 
+import java.util.ArrayList;
+
 /**
  * Created by elias on 2016-02-18.
  */
@@ -21,5 +23,11 @@ public enum Settings{
         for(Settings s : Settings.values())
             if(s.getKey().equals(setting)) return s;
         return null;
+    }
+    public static Settings[] getfavourites(){
+        ArrayList<Settings> sArr = new ArrayList<Settings>();
+        for(Settings s : Settings.values())
+            if(s.getKey().contains("fav")) sArr.add(s);
+        return sArr.toArray(new Settings[sArr.size()]);
     }
 }

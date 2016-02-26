@@ -5,25 +5,26 @@
         <menu>
             <group android:checkableBehavior="none">
                 <item
-                    android:id="@+id/nav_temperature"
+                    android:id="@+id/nav_Temperature"
                     android:icon="@drawable/ic_launcher"
                     android:title="Temperature" />
                 <item
-                    android:id="@+id/nav_sound"
+                    android:id="@+id/nav_Audio"
                     android:icon="@drawable/ic_speaker_black_48dp"
                     android:title="Sound" />
                 <item
-                    android:id="@+id/nav_light"
+                    android:id="@+id/nav_Light"
                     android:icon="@drawable/ic_lightbulb_outline_black_48dp"
                     android:title="Light" />
                 <item
-                    android:id="@+id/nav_accelerometer"
-                    android:icon="@drawable/ic_directions_run_black_48dp"
-                    android:title="Accelerometer" />
-                <item
-                    android:id="@+id/nav_co2"
+                    android:id="@+id/nav_CO2"
                     android:icon="@drawable/ic_nature_people_black_48dp"
                     android:title="CO2" />
+                <item
+                    android:id="@+id/nav_Motion"
+                    android:icon="@drawable/ic_directions_run_black_48dp"
+                    android:title="Accelerometer" />
+
             </group>
         </menu>
     </item>
@@ -31,31 +32,32 @@
     <item android:title="Favorite Sensors">
         <menu>
                 <item
-                    android:id="@+id/tempFav"
+                    android:id="@+id/fav_Temperature"
                     android:icon="@drawable/switch_off"
                     android:title="Temperature" />
                 <item
-                    android:id="@+id/soundFav"
+                    android:id="@+id/fav_Audio"
                     android:icon="@drawable/switch_off"
                     android:title="Sound" />
                 <item
-                    android:id="@+id/lightFav"
+                    android:id="@+id/fav_Light"
                     android:icon="@drawable/switch_off"
                     android:title="Light" />
                 <item
-                    android:id="@+id/accFav"
-                    android:icon="@drawable/switch_off"
-                    android:title="Accelerometer" />
-                <item
-                    android:id="@+id/co2Fav"
+                    android:id="@+id/fav_CO2"
                     android:icon="@drawable/switch_off"
                     android:title="CO2" />
+                <item
+                    android:id="@+id/fav_Motion"
+                    android:icon="@drawable/switch_off"
+                    android:title="Accelerometer" />
+
         </menu>
     </item>
     <item android:title="Other">
         <menu>
             <item
-                android:id="@+id/nav_alarm"
+                android:id="@+id/nav_Alarm"
                 android:icon="@drawable/ic_access_alarm_black_48dp"
                 android:title="Alarm" />
         </menu>

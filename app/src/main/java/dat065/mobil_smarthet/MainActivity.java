@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -21,58 +22,68 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
-import org.joda.time.DateTime;
+import com.google.android.gms.common.api.GoogleApiClient;
 
-import java.util.HashMap;
-import java.util.Random;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import dat065.mobil_smarthet.alarm.AlarmActivity;
 import dat065.mobil_smarthet.bluetooth.BluetoothClient;
-import dat065.mobil_smarthet.bluetooth.SerializableSensor;
 import dat065.mobil_smarthet.constants.Sensors;
+import dat065.mobil_smarthet.constants.Settings;
 import dat065.mobil_smarthet.database.SensorDBHandler;
 import dat065.mobil_smarthet.database.SettingsDBHandler;
-import dat065.mobil_smarthet.sensor.FavoriteSensors;
+import dat065.mobil_smarthet.event.SensorEvent;
+import dat065.mobil_smarthet.sensor.SensorService;
 
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private BluetoothAdapter bluetoothAdapter;
-    private boolean tempBool=false,lightBool=false,accBool=false, soundBool=false, co2Bool=false;
+
     private DrawerLayout drawerLayout;
     private SectionsAdapter sectionsAdapter;
     private ViewPager viewPager;
+
+    private BluetoothAdapter bluetoothAdapter;
     private BluetoothClient btc = null;
     private BluetoothDevice btServer = null;
     private String btServerName = "dat065MS";
     private boolean btStatus;
+    private SensorService sensorService;
+
     private SettingsDBHandler dbSettings;
     private SensorDBHandler dbSensor;
     private Menu menu;
 
-    FavoriteSensors favoriteSensors;
-
+    private Sensors[] favoriteSensors = new Sensors[2];
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {		
+    protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         sectionsAdapter = new SectionsAdapter(getSupportFragmentManager());
-
-        // Set up the ViewPager with the sections adapter.
         viewPager = (ViewPager) findViewById(R.id.container);
         viewPager.setAdapter(sectionsAdapter);
+
         btStatus = false;
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        dbSettings = new SettingsDBHandler(this,null);
+
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -82,37 +93,46 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         //navigationView.setItemIconTintList(null);
         checkBluetooth();
-        favoriteSensors = new FavoriteSensors(this,dbSettings);
         dbSensor = new SensorDBHandler(this,null);
+        dbSettings = new SettingsDBHandler(this,null);
         /*Random rand = new Random();
-        HashMap<Integer,Double> t = new HashMap<>();
+        HashMap<Long,Double> t = new HashMap<>();
         for(int i = 40;i>0;i--){
-            int r = rand.nextInt(100)+1;
-            Long l = DateTime.now().minusDays(i).getMillis()/1000;
-            t.put(Integer.parseInt(l+""),(double) r);
+            long r = rand.nextLong(100)+1;
+            Long l = DateTime.now().minusDays(i).getMillis();
+            t.put(l,(double) r);
         }
         dbSensor.addData(new SerializableSensor(t,1));*/
 
-
-
-    }
+        //default switch postion
+        for(Settings set: Settings.getfavourites() ){
+            Sensors s = Sensors.match(dbSettings.get(set).second);
+            if(s != null){
+                navigationView.getMenu().getItem(1).getSubMenu().getItem(s.getId()-1).setIcon(R.drawable.switch_on);
+            }
+        }
+        sensorService = new SensorService(this);
+        sensorService.start();
+      }
 
     @Override
     protected void onDestroy() {
+        sensorService.stop();
+        EventBus.getDefault().unregister(this);
         super.onDestroy();
-        if(isBluetoothEnabled()) {
+        if (isBluetoothEnabled()) {
             unregisterReceiver(mReceiver);
         }
         BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
     }
-	
-	private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                Log.i("bt","Bluetooth device found: "+device.getName());
-                if(device.getName() != null) {
+                Log.i("bt", "Bluetooth device found: " + device.getName());
+                if (device.getName() != null) {
                     if (device.getName().equals(btServerName)) {
                         Log.i("bt", "Bluetooth server located!");
                         btServer = device;
@@ -120,7 +140,7 @@ public class MainActivity extends AppCompatActivity
                         if (btc == null) {
                             onBtConnection(1);
                             Log.i("bt", "Connecting to bluetooth server");
-                            BluetoothClient btc = new BluetoothClient(btServer,getApplicationContext());
+                            BluetoothClient btc = new BluetoothClient(btServer, getApplicationContext());
                             btc.start();
                         }
                     }
@@ -128,7 +148,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
     };
-	
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -138,7 +158,7 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
-	
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -157,9 +177,9 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    public boolean isBluetoothEnabled(){
+    public boolean isBluetoothEnabled() {
 
-        if(bluetoothAdapter==null){
+        if (bluetoothAdapter == null) {
             return false;
         }
         return bluetoothAdapter.isEnabled();
@@ -173,9 +193,10 @@ public class MainActivity extends AppCompatActivity
         registerReceiver(mReceiver, filter);
         Log.i("bt", "Searching for server");
         //if(!bluetoothAdapter.isEnabled())
-            bluetoothAdapter.enable();
+        bluetoothAdapter.enable();
         bluetoothAdapter.startDiscovery();
     }
+
     /**
      * Handles event clicks of the alarm button located at the home screen.
      * When called, it starts a new AlarmActivity
@@ -189,17 +210,17 @@ public class MainActivity extends AppCompatActivity
     /**
      * Listens on the actions of the bluetooth switch at the home screen.
      * Perform different actions depending on if the state of the switch(on or off).
-     *
      */
 
-    public void onBtConnectionClick(MenuItem item){
-        if(btStatus)
+    public void onBtConnectionClick(MenuItem item) {
+        if (btStatus)
             onBtConnection(2);
         else
             onBtConnection(0);
     }
+
     private void onBtConnection(int status) {
-        switch (status){
+        switch (status) {
             case 0:
                 btStatus = true;
                 menu.getItem(0).setIcon(R.drawable.ic_bluetooth_searching_white_48dp);
@@ -210,12 +231,12 @@ public class MainActivity extends AppCompatActivity
                 break;
             case 2:
                 menu.getItem(0).setIcon(R.drawable.ic_bluetooth_disabled_white_48dp);
-                if(bluetoothAdapter.isEnabled()){
+                if (bluetoothAdapter.isEnabled()) {
                     bluetoothAdapter.cancelDiscovery();
                     bluetoothAdapter.disable();
                 }
 
-                if(btc != null)btc.cancel();
+                if (btc != null) btc.cancel();
                 btStatus = false;
                 break;
             default:
@@ -229,7 +250,7 @@ public class MainActivity extends AppCompatActivity
      * user if it wants to activate bluetooth.
      */
     public void checkBluetooth() {
-        if(!isBluetoothEnabled()){
+        if (!isBluetoothEnabled()) {
             final AlertDialog bluetoothDialog;
             final AlertDialog.Builder bluetoothDialogBuilder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
             bluetoothDialogBuilder.setTitle("Bluetooth error message")
@@ -248,101 +269,54 @@ public class MainActivity extends AppCompatActivity
             bluetoothDialog = bluetoothDialogBuilder.create();
             bluetoothDialog.getWindow().getAttributes().windowAnimations = R.style.dialog_animation;
             bluetoothDialog.show();
-        } else{
+        } else {
             activateBluetooth();
         }
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void updateFavSensorValue(SensorEvent ev){
+        int id = getResources().getIdentifier("sensor_"+ev.getSetting().getKey()+"_text", "id", getPackageName());
+        if(ev.getSensor() == null)
+            ((TextView) findViewById(id)).setText(ev.getAltText());
+        else
+            ((TextView) findViewById(id)).setText(ev.getValue() + " "+ev.getSensor().getSymbol());
+    }
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+
+        String[] id_name = getResources().getResourceName(item.getItemId()).split("\\/");
+        String[] action = id_name[id_name.length - 1].split("_");
         Intent i = new Intent(this, GraphActivity.class);
-        if (id == R.id.nav_temperature) {
-            i.putExtra("sensor", Sensors.TEMPERATURE.getId());
-            runActivity(i);
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else if (id == R.id.nav_sound) {
-            i.putExtra("sensor", Sensors.AUDIO.getId());
-            runActivity(i);
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else if (id == R.id.nav_light) {
-            i.putExtra("sensor", Sensors.LIGHT.getId());
-            runActivity(i);
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else if (id == R.id.nav_accelerometer) {
-            i.putExtra("sensor", Sensors.MOTION.getId());
-            runActivity(i);
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else if (id == R.id.nav_co2) {
-            i.putExtra("sensor", Sensors.CO2.getId());
-            runActivity(i);
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else if (id == R.id.nav_alarm) {
-            startActivity(new Intent(this, AlarmActivity.class));
-            drawerLayout.closeDrawer(GravityCompat.START);
-        }
-        switch (id){
-            case R.id.tempFav:
-                if(!tempBool){
-                    if(favoriteSensors.favorizeSensor(Sensors.TEMPERATURE)){
+        switch (action[0]) {
+            case "nav":
+                if (action[1].equals("Alarm")) {
+                    startActivity(new Intent(this, AlarmActivity.class));
+                } else {
+                    i.putExtra("sensor", Sensors.match(action[1]).getId());
+                    runActivity(i);
+                }
+                drawerLayout.closeDrawer(GravityCompat.START);
+                break;
+            case "fav": {
+                int status = sensorService.clickFavorizeSensor(Sensors.match(action[1]));
+                switch (status){
+                    case -2:
+                        Snackbar.make(this.getCurrentFocus(), "Favorized limit reached!", Snackbar.LENGTH_SHORT).show();
+                        break;
+                    case -1:
+                        Snackbar.make(this.getCurrentFocus(), "Unfavorized!", Snackbar.LENGTH_SHORT).show();
+                        item.setIcon(R.drawable.switch_off);
+                        break;
+                    default:
+                        Snackbar.make(this.getCurrentFocus(), "Favorized!", Snackbar.LENGTH_SHORT).show();
                         item.setIcon(R.drawable.switch_on);
-                        tempBool=true;
-                    }
-                }else{
-                    item.setIcon(R.drawable.switch_off);
-                    tempBool=false;
-                    favoriteSensors.unfavorizeSensor(Sensors.TEMPERATURE);
+                        break;
                 }
                 break;
-            case R.id.soundFav:
-                if(!soundBool){
-                    if(favoriteSensors.favorizeSensor(Sensors.AUDIO)){
-                        item.setIcon(R.drawable.switch_on);
-                        soundBool=true;
-                    }
-                }else{
-                    item.setIcon(R.drawable.switch_off);
-                    soundBool=false;
-                    favoriteSensors.unfavorizeSensor(Sensors.AUDIO);
-                }
-                break;
-            case R.id.lightFav:
-                if(!lightBool){
-                    if(favoriteSensors.favorizeSensor(Sensors.LIGHT)){
-                        item.setIcon(R.drawable.switch_on);
-                        lightBool=true;
-                    }
-                }else{
-                    item.setIcon(R.drawable.switch_off);
-                    lightBool=false;
-                    favoriteSensors.unfavorizeSensor(Sensors.LIGHT);
-                }
-                break;
-            case R.id.accFav:
-                if(!accBool){
-                    if(favoriteSensors.favorizeSensor(Sensors.MOTION)){
-                        item.setIcon(R.drawable.switch_on);
-                        accBool=true;
-                    }
-                }else{
-                    item.setIcon(R.drawable.switch_off);
-                    accBool=false;
-                    favoriteSensors.unfavorizeSensor(Sensors.MOTION);
-                }
-                break;
-            case R.id.co2Fav:
-                if(!accBool){
-                    if(favoriteSensors.favorizeSensor(Sensors.CO2)){
-                        item.setIcon(R.drawable.switch_on);
-                        co2Bool=true;
-                    }
-                }else{
-                    item.setIcon(R.drawable.switch_off);
-                    co2Bool=false;
-                    favoriteSensors.unfavorizeSensor(Sensors.CO2);
-                }
+            }
+            default:
                 break;
         }
         return true;
@@ -354,7 +328,7 @@ public class MainActivity extends AppCompatActivity
      * been made and display them again when the home screen is
      * displayed again.
      *
-     * @param i     The desired Intent to start
+     * @param i The desired Intent to start
      */
     private void runActivity(final Intent i) {
         i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);

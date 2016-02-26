@@ -34,7 +34,7 @@ public enum Sensors{
     }
     public static Sensors match(String sensor){
         for(Sensors s : Sensors.values())
-            if(s.equals(sensor)) return s;
+            if(s.getName().equals(sensor)) return s;
         return null;
     }
 }

@@ -26,16 +26,31 @@
             android:name=".GraphActivity"
             android:label="GraphActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".alarm.AlarmActivity"
             android:label="@string/title_activity_alarm"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleTop"/>
-        <receiver android:name=".alarm.AlarmReceiver"/>
-        <service android:name=".alarm.RingtoneService"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <receiver android:name=".alarm.AlarmReceiver" />
+
+        <service
+            android:name=".alarm.RingtoneService"
             android:enabled="true" />
+        <service
+            android:name=".sensor.SensorService"
+            android:enabled="true"
+            android:exported="true" />
+        <!--
+             ATTENTION: This was auto-generated to add Google Play services to your project for
+             App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
+        -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
     </application>
 
 </manifest>

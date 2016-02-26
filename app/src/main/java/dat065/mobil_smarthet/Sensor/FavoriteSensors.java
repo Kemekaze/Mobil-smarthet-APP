@@ -1,25 +1,9 @@
 package dat065.mobil_smarthet.sensor;
 
-import android.content.Intent;
-import android.os.Handler;
-import android.util.Pair;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import dat065.mobil_smarthet.GraphActivity;
-import dat065.mobil_smarthet.MainActivity;
-import dat065.mobil_smarthet.R;
-import dat065.mobil_smarthet.constants.Sensors;
-import dat065.mobil_smarthet.constants.Settings;
-import dat065.mobil_smarthet.database.SensorDBHandler;
-import dat065.mobil_smarthet.database.SettingsDBHandler;
-import dat065.mobil_smarthet.helpers.Helpers;
-
 /**
  * Created by backevik on 16-02-11.
  */
-public class FavoriteSensors{
+/*public class FavoriteSensors{
     private MainActivity activity;
 
     private TextView favoriteOneText;
@@ -32,14 +16,17 @@ public class FavoriteSensors{
     private SettingsDBHandler dbSettings;
     private SensorDBHandler dbSensors;
 
-    public FavoriteSensors(final MainActivity activity, SettingsDBHandler dbSettings){
+    public FavoriteSensors(final MainActivity activity){
         this.activity = activity;
-        this.dbSettings = dbSettings;
+        this.dbSettings = new SettingsDBHandler(activity.getApplicationContext(),null);
         this.dbSensors = new SensorDBHandler(activity.getApplicationContext(),null);
         favoriteOneText = (TextView) this.activity.findViewById(R.id.sensorTextOne);
         favoriteTwoText = (TextView) this.activity.findViewById(R.id.sensorTextTwo);
         favoriteOne = Sensors.match(dbSettings.get(Settings.FAV_SENSOR_1).second);
         favoriteTwo = Sensors.match(dbSettings.get(Settings.FAV_SENSOR_2).second);
+        favoriteOneText.setText(Helpers.round(dbSensors.getMostRelevantData(favoriteOne), 1) + " " + favoriteOne.getSymbol());
+        favoriteTwoText.setText(Helpers.round(dbSensors.getMostRelevantData(favoriteTwo), 1) + " " + favoriteTwo.getSymbol());
+
         handler = new Handler();
 
 
@@ -66,7 +53,9 @@ public class FavoriteSensors{
             }
         });
     }
-
+    public Sensors[] getFavSensors(){
+        return new Sensors[]{favoriteOne,favoriteTwo};
+    }
     public boolean favorizeSensor(Sensors sensor){
         if(favoriteOne==null){
             favoriteOne = sensor;
@@ -96,8 +85,11 @@ public class FavoriteSensors{
             favoriteTwoText.setText("Unset");
         }
     }
+    private void setText(Sensors sensor){
 
-    public void createLineChart(Sensors sensor){
+    }
+
+   public void createLineChart(Sensors sensor){
         final Intent i = new Intent(activity.getApplicationContext(), GraphActivity.class);
         i.putExtra("sensor", sensor.getId());
         i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -123,4 +115,4 @@ public class FavoriteSensors{
     //Also create custom listener for the objects that is connected to this class
     //to be able to sync newly added data.
 
-}
+}*/
