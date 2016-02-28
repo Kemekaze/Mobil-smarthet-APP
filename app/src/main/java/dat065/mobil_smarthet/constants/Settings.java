@@ -7,6 +7,7 @@ import java.util.ArrayList;
  */
 public enum Settings{
     LAST_SENSOR_TIME("time"),
+    PRESET("preset"),
     FAV_SENSOR_1("fav_1"),
     FAV_SENSOR_2("fav_2");
 

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.util.Log;
 import android.util.Pair;
 
+import org.greenrobot.eventbus.EventBus;
 import org.joda.time.Instant;
 
 import java.io.ByteArrayInputStream;
@@ -18,12 +19,12 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.UUID;
 
 import dat065.mobil_smarthet.constants.Settings;
 import dat065.mobil_smarthet.database.SensorDBHandler;
 import dat065.mobil_smarthet.database.SettingsDBHandler;
+import dat065.mobil_smarthet.event.UpdateGUIEvent;
 
 public class BluetoothClient extends Thread implements Runnable{
 
@@ -96,7 +97,7 @@ public class BluetoothClient extends Thread implements Runnable{
                     if(time > lastDataTime) lastDataTime = time;
                 }
                 dbSettings.add(new Pair(Settings.LAST_SENSOR_TIME, String.valueOf(lastDataTime)));
-
+                EventBus.getDefault().post(new UpdateGUIEvent(1));
 
                 data = null;
                 try {

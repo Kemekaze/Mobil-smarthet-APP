@@ -32,11 +32,16 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import dat065.mobil_smarthet.alarm.AlarmActivity;
 import dat065.mobil_smarthet.bluetooth.BluetoothClient;
+import dat065.mobil_smarthet.constants.Presets;
 import dat065.mobil_smarthet.constants.Sensors;
 import dat065.mobil_smarthet.constants.Settings;
 import dat065.mobil_smarthet.database.SensorDBHandler;
 import dat065.mobil_smarthet.database.SettingsDBHandler;
+import dat065.mobil_smarthet.event.FavourizeEvent;
 import dat065.mobil_smarthet.event.SensorEvent;
+import dat065.mobil_smarthet.event.SnackbarEvent;
+import dat065.mobil_smarthet.event.SwitchEvent;
+import dat065.mobil_smarthet.event.UpdateGUIEvent;
 import dat065.mobil_smarthet.sensor.SensorService;
 
 
@@ -47,6 +52,7 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout drawerLayout;
     private SectionsAdapter sectionsAdapter;
     private ViewPager viewPager;
+    private NavigationView navigationView;
 
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothClient btc = null;
@@ -74,10 +80,14 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        dbSensor = new SensorDBHandler(this,null);
+        dbSettings = new SettingsDBHandler(this,null);
 
         sectionsAdapter = new SectionsAdapter(getSupportFragmentManager());
         viewPager = (ViewPager) findViewById(R.id.container);
         viewPager.setAdapter(sectionsAdapter);
+        viewPager.addOnPageChangeListener(pageChangeListener);
+
 
         btStatus = false;
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -89,12 +99,11 @@ public class MainActivity extends AppCompatActivity
                 this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.setDrawerListener(toggle);
         toggle.syncState();
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         //navigationView.setItemIconTintList(null);
         checkBluetooth();
-        dbSensor = new SensorDBHandler(this,null);
-        dbSettings = new SettingsDBHandler(this,null);
+
         /*Random rand = new Random();
         HashMap<Long,Double> t = new HashMap<>();
         for(int i = 40;i>0;i--){
@@ -104,6 +113,9 @@ public class MainActivity extends AppCompatActivity
         }
         dbSensor.addData(new SerializableSensor(t,1));*/
 
+
+
+        ;
         //default switch postion
         for(Settings set: Settings.getfavourites() ){
             Sensors s = Sensors.match(dbSettings.get(set).second);
@@ -111,13 +123,19 @@ public class MainActivity extends AppCompatActivity
                 navigationView.getMenu().getItem(1).getSubMenu().getItem(s.getId()-1).setIcon(R.drawable.switch_on);
             }
         }
-        sensorService = new SensorService(this);
-        sensorService.start();
+
+        startService(new Intent(this, SensorService.class));
+        EventBus.getDefault().postSticky(new UpdateGUIEvent(1));
+        Presets preset = Presets.match(dbSettings.get(Settings.PRESET).second);
+        if(preset == null) EventBus.getDefault().postSticky(new UpdateGUIEvent(2,0));
+        else viewPager.setCurrentItem(preset.getId());
+
       }
+
+
 
     @Override
     protected void onDestroy() {
-        sensorService.stop();
         EventBus.getDefault().unregister(this);
         super.onDestroy();
         if (isBluetoothEnabled()) {
@@ -176,7 +194,22 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         return super.onOptionsItemSelected(item);
     }
+    private ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
 
+        @Override
+        public void onPageSelected(int position) {
+            EventBus.getDefault().postSticky(new UpdateGUIEvent(2, position));
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {}
+    };
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void updatePager(){
+
+    }
     public boolean isBluetoothEnabled() {
 
         if (bluetoothAdapter == null) {
@@ -281,6 +314,29 @@ public class MainActivity extends AppCompatActivity
         else
             ((TextView) findViewById(id)).setText(ev.getValue() + " "+ev.getSensor().getSymbol());
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+     public void snackbar(SnackbarEvent ev){
+        Log.i("Main.snackbar",ev.getText());
+        switch (ev.getDuration()){
+            case Snackbar.LENGTH_LONG:
+                Snackbar.make(this.getCurrentFocus(), ev.getText(),Snackbar.LENGTH_LONG).show();
+                break;
+            default:
+                Snackbar.make(this.getCurrentFocus(), ev.getText(),Snackbar.LENGTH_SHORT).show();
+                break;
+
+        }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void setSwitch(SwitchEvent ev){
+        Log.i("Main.setSwitch", ev.getSensor().getName() + " " + ev.getState());
+        MenuItem item = navigationView.getMenu().getItem(1).getSubMenu().getItem(ev.getSensor().getId() - 1);
+        if(!ev.getState()) {
+            item.setIcon(R.drawable.switch_on);
+        }else {
+            item.setIcon(R.drawable.switch_off);
+        }
+    }
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -300,20 +356,7 @@ public class MainActivity extends AppCompatActivity
                 drawerLayout.closeDrawer(GravityCompat.START);
                 break;
             case "fav": {
-                int status = sensorService.clickFavorizeSensor(Sensors.match(action[1]));
-                switch (status){
-                    case -2:
-                        Snackbar.make(this.getCurrentFocus(), "Favorized limit reached!", Snackbar.LENGTH_SHORT).show();
-                        break;
-                    case -1:
-                        Snackbar.make(this.getCurrentFocus(), "Unfavorized!", Snackbar.LENGTH_SHORT).show();
-                        item.setIcon(R.drawable.switch_off);
-                        break;
-                    default:
-                        Snackbar.make(this.getCurrentFocus(), "Favorized!", Snackbar.LENGTH_SHORT).show();
-                        item.setIcon(R.drawable.switch_on);
-                        break;
-                }
+                EventBus.getDefault().post(new FavourizeEvent(Sensors.match(action[1])));
                 break;
             }
             default:

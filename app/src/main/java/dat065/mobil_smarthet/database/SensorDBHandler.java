@@ -49,7 +49,6 @@ public class SensorDBHandler extends DBHandler {
 
         SQLiteDatabase db = getReadableDatabase();
         String query = "SELECT * FROM " + sensor.getName() + ((qPlus.equals(""))?";":" "+qPlus+";");
-        Log.d("QueryTest",query);
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
         while(!c.isAfterLast()){

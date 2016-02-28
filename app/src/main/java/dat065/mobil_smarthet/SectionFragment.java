@@ -22,6 +22,17 @@ public class SectionFragment extends Fragment {
     public SectionFragment() {
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
     /**
      * Returns a new instance of this fragment for the given section
      * number.

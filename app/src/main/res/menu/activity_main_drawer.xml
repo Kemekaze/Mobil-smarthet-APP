@@ -9,13 +9,14 @@
                     android:icon="@drawable/ic_launcher"
                     android:title="Temperature" />
                 <item
-                    android:id="@+id/nav_Audio"
-                    android:icon="@drawable/ic_speaker_black_48dp"
-                    android:title="Sound" />
-                <item
                     android:id="@+id/nav_Light"
                     android:icon="@drawable/ic_lightbulb_outline_black_48dp"
                     android:title="Light" />
+                <item
+                    android:id="@+id/nav_Audio"
+                    android:icon="@drawable/ic_speaker_black_48dp"
+                    android:title="Sound" />
+
                 <item
                     android:id="@+id/nav_CO2"
                     android:icon="@drawable/ic_nature_people_black_48dp"
@@ -36,13 +37,13 @@
                     android:icon="@drawable/switch_off"
                     android:title="Temperature" />
                 <item
-                    android:id="@+id/fav_Audio"
-                    android:icon="@drawable/switch_off"
-                    android:title="Sound" />
-                <item
                     android:id="@+id/fav_Light"
                     android:icon="@drawable/switch_off"
                     android:title="Light" />
+                <item
+                    android:id="@+id/fav_Audio"
+                    android:icon="@drawable/switch_off"
+                    android:title="Sound" />
                 <item
                     android:id="@+id/fav_CO2"
                     android:icon="@drawable/switch_off"
