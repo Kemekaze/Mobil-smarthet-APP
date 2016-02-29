@@ -138,7 +138,9 @@ public class MainActivity extends AppCompatActivity
         if (isBluetoothEnabled()) {
             unregisterReceiver(mReceiver);
         }
-        BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
+        if(isBluetoothEnabled()){
+            BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
+        }
     }
 
     @Override
