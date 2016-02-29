@@ -102,7 +102,6 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         //navigationView.setItemIconTintList(null);
         checkBluetooth();
-
         /*Random rand = new Random();
         HashMap<Long,Double> t = new HashMap<>();
         for(int i = 40;i>0;i--){
@@ -131,8 +130,6 @@ public class MainActivity extends AppCompatActivity
 
       }
 
-
-
     @Override
     protected void onDestroy() {
         EventBus.getDefault().unregister(this);
@@ -140,31 +137,10 @@ public class MainActivity extends AppCompatActivity
         if (isBluetoothEnabled()) {
             unregisterReceiver(mReceiver);
         }
-        BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
-    }
-
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                Log.i("bt", "Bluetooth device found: " + device.getName());
-                if (device.getName() != null) {
-                    if (device.getName().equals(btServerName)) {
-                        Log.i("bt", "Bluetooth server located!");
-                        btServer = device;
-                        BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
-                        if (btc == null) {
-                            onBtConnection(1);
-                            Log.i("bt", "Connecting to bluetooth server");
-                            BluetoothClient btc = new BluetoothClient(btServer, getApplicationContext());
-                            btc.start();
-                        }
-                    }
-                }
-            }
+        if(isBluetoothEnabled()){
+            BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
         }
-    };
+    }
 
     @Override
     public void onBackPressed() {
@@ -205,10 +181,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onPageScrollStateChanged(int state) {}
     };
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void updatePager(){
-
-    }
+	
     public boolean isBluetoothEnabled() {
 
         if (bluetoothAdapter == null) {
@@ -230,7 +203,6 @@ public class MainActivity extends AppCompatActivity
         }
         bluetoothAdapter.startDiscovery();
     }
-
     /**
      * Handles event clicks of the alarm button located at the home screen.
      * When called, it starts a new AlarmActivity
@@ -241,83 +213,17 @@ public class MainActivity extends AppCompatActivity
         runActivity(new Intent(this, AlarmActivity.class));
     }
 
-    /**
-     * Listens on the actions of the bluetooth switch at the home screen.
-     * Perform different actions depending on if the state of the switch(on or off).
-     */
-
-    public void onBtConnectionClick(MenuItem item) {
-        if (btStatus)
-            onBtConnection(2);
-        else
-            onBtConnection(0);
-    }
-
-    private void onBtConnection(int status) {
-        switch (status) {
-            case 0:
-                btStatus = true;
-                menu.getItem(0).setIcon(R.drawable.ic_bluetooth_searching_white_48dp);
-                activateBluetooth();
-                break;
-            case 1:
-                menu.getItem(0).setIcon(R.drawable.ic_bluetooth_connected_white_48dp);
-                break;
-            case 2:
-                menu.getItem(0).setIcon(R.drawable.ic_bluetooth_disabled_white_48dp);
-                if (bluetoothAdapter.isEnabled()) {
-                    bluetoothAdapter.cancelDiscovery();
-                    bluetoothAdapter.disable();
-                }
-
-                if (btc != null) btc.cancel();
-                btStatus = false;
-                break;
-            default:
-                break;
-        }
-    }
-
-    /**
-     * Checks whether the bluetooth is on or not. If it is,
-     * do nothing. Else create a AlertDialog that asks the
-     * user if it wants to activate bluetooth.
-     */
-    public void checkBluetooth() {
-        if (!isBluetoothEnabled()) {
-            final AlertDialog bluetoothDialog;
-            final AlertDialog.Builder bluetoothDialogBuilder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
-            bluetoothDialogBuilder.setTitle("Bluetooth error message")
-                    .setMessage("You have to activate bluetooth to synchronize data, would you like to do it now?")
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            //this crashes on computer, no bluetooth on emulator phone
-                            onBtConnection(0);
-                        }
-                    }).setIcon(R.drawable.ic_error_outline_black_48dp)
-                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-            bluetoothDialog = bluetoothDialogBuilder.create();
-            bluetoothDialog.getWindow().getAttributes().windowAnimations = R.style.dialog_animation;
-            bluetoothDialog.show();
-        } else {
-            activateBluetooth();
-        }
-    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void updateFavSensorValue(SensorEvent ev){
         int id = getResources().getIdentifier("sensor_"+ev.getSetting().getKey()+"_text", "id", getPackageName());
         if(ev.getSensor() == null)
             ((TextView) findViewById(id)).setText(ev.getAltText());
         else
-            ((TextView) findViewById(id)).setText(ev.getValue() + " "+ev.getSensor().getSymbol());
+            ((TextView) findViewById(id)).setText(ev.getValue() + " " + ev.getSensor().getSymbol());
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
      public void snackbar(SnackbarEvent ev){
-        Log.i("Main.snackbar",ev.getText());
+        Log.i("Main.snackbar", ev.getText());
         switch (ev.getDuration()){
             case Snackbar.LENGTH_LONG:
                 Snackbar.make(this.getCurrentFocus(), ev.getText(),Snackbar.LENGTH_LONG).show();
@@ -395,4 +301,113 @@ public class MainActivity extends AppCompatActivity
         new Thread(runnable).start();
     }
 
+    //-------------------------------------------------------BLUETOOTH-------------------------------------------------------
+    /**
+     * Checks whether the bluetooth is on or not. If it is,
+     * do nothing. Else create a AlertDialog that asks the
+     * user if it wants to activate bluetooth.
+     */
+    public void checkBluetooth() {
+        if (!isBluetoothEnabled()) {
+            final AlertDialog bluetoothDialog;
+            final AlertDialog.Builder bluetoothDialogBuilder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
+            bluetoothDialogBuilder.setTitle("Bluetooth error message")
+                    .setMessage("You have to activate bluetooth to synchronize data, would you like to do it now?")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            //this crashes on computer, no bluetooth on emulator phone
+                            onBtConnection(0);
+                        }
+                    }).setIcon(R.drawable.ic_error_outline_black_48dp)
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            bluetoothDialog = bluetoothDialogBuilder.create();
+            bluetoothDialog.getWindow().getAttributes().windowAnimations = R.style.dialog_animation;
+            bluetoothDialog.show();
+        } else {
+            activateBluetooth();
+            //onBtConnection(0);
+        }
+    }
+
+    /**
+     * Listens on the actions of the bluetooth switch at the home screen.
+     * Perform different actions depending on the state of the switch(on or off).
+     */
+    public void onBtConnectionClick(MenuItem item) {
+        if (btStatus)
+            onBtConnection(2);
+        else
+            onBtConnection(0);
+    }
+
+    private void onBtConnection(int status) {
+        switch (status) {
+            case 0:
+                btStatus = true;
+                menu.getItem(0).setIcon(R.drawable.ic_bluetooth_searching_white_48dp);
+                activateBluetooth();
+                break;
+            case 1:
+                menu.getItem(0).setIcon(R.drawable.ic_bluetooth_connected_white_48dp);
+                break;
+            case 2:
+                menu.getItem(0).setIcon(R.drawable.ic_bluetooth_disabled_white_48dp);
+                if (bluetoothAdapter.isEnabled()) {
+                    bluetoothAdapter.cancelDiscovery();
+                    bluetoothAdapter.disable();
+                }
+
+                if (btc != null) btc.cancel();
+                btStatus = false;
+                break;
+            default:
+                break;
+        }
+    }
+    /**
+     * Activates bluetooth.
+     */
+    public void activateBluetooth() {
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        registerReceiver(mReceiver, filter);
+        Log.i("bt", "Searching for server");
+        //if(!bluetoothAdapter.isEnabled())
+        bluetoothAdapter.enable();
+        bluetoothAdapter.startDiscovery();
+    }
+
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                Log.i("bt", "Bluetooth device found: " + device.getName());
+                if (device.getName() != null) {
+                    if (device.getName().equals(btServerName)) {
+                        Log.i("bt", "Bluetooth server located!");
+                        btServer = device;
+                        BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
+                        if (btc == null) {
+                            onBtConnection(1);
+                            Log.i("bt", "Connecting to bluetooth server");
+                            BluetoothClient btc = new BluetoothClient(btServer, getApplicationContext());
+                            btc.start();
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    public boolean isBluetoothEnabled() {
+
+        if (bluetoothAdapter == null) {
+            return false;
+        }
+        return bluetoothAdapter.isEnabled();
+    }
 }

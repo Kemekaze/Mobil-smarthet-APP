@@ -3,7 +3,6 @@ package dat065.mobil_smarthet.sensor;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.Pair;
 
@@ -38,7 +37,7 @@ public class SensorService extends Service{
         dbSettings = new SettingsDBHandler(this,null);
         favoriteSensors= Settings.getfavourites();
     }
-    @Nullable
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;

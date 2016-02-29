@@ -21,7 +21,7 @@ public class SectionsAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         // getItem is called to instantiate the fragment for the given page.
         // Return a PlaceholderFragment (defined as a static inner class below).
-        Log.i("adapter","adaper");
+        Log.i("adapter", "adaper");
         return SectionFragment.newInstance(position,getPageTitle(position));
     }
 
@@ -42,9 +42,9 @@ public class SectionsAdapter extends FragmentPagerAdapter {
             case 0:
                 return Presets.FAVOURITES.getKey();
             case 1:
-                return Presets.WORK.getKey();
-            case 2:
                 return Presets.SLEEP.getKey();
+            case 2:
+                return Presets.WORK.getKey();
         }
         return null;
     }

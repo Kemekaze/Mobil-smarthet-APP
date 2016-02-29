@@ -5,8 +5,9 @@ package dat065.mobil_smarthet.constants;
  */
 public enum Presets {
     FAVOURITES(0,"Favourites", new Sensors[]{}, new double[]{}),
-    WORK(1,"Work", new Sensors[]{Sensors.CO2,Sensors.AUDIO}, new double[]{}),
-    SLEEP(2,"Sleep", new Sensors[]{Sensors.LIGHT,Sensors.AUDIO}, new double[]{});
+    SLEEP(1,"Sleep", new Sensors[]{Sensors.LIGHT,Sensors.AUDIO}, new double[]{}),
+    WORK(2,"Work", new Sensors[]{Sensors.CO2,Sensors.AUDIO}, new double[]{});
+
 
     private int id;
     private final String key;
