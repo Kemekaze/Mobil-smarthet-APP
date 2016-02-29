@@ -42,7 +42,7 @@ public class GraphActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        //getSupportActionBar().setDisplayShowTitleEnabled(false);
         sensorDBHandler = new SensorDBHandler(this,null);
 
         Bundle extras = getIntent().getExtras();
