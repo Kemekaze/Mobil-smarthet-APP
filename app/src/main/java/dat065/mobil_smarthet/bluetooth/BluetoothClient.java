@@ -19,6 +19,8 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import dat065.mobil_smarthet.constants.Settings;
@@ -57,41 +59,26 @@ public class BluetoothClient extends Thread implements Runnable{
     }
     public void run() {
         Log.i("bt", "running");
-        byte[] buffer = new byte[33554432];// ~1 MB
+        byte[] buffer = new byte[1048576];// ~1 MB
         int bytes;
         String stringTime = dbSettings.get(Settings.LAST_SENSOR_TIME).second;
         long lastDataTime = (!stringTime.equals(""))?Long.parseLong(stringTime): 0;
-        byte[] data = null;
-        byte[] tmp = null;
-        while (isRunning) {
-            try {
-                if(data == null) {
-                    byte[] message = getMessage((byte) 0xFF, (byte) 0xFF, lastDataTime);
-                    lastMessage = message;
-                    write(message);
-                }
-                try{
+        try{
+            while (isRunning) {
+                byte[] message = getMessage((byte) 0xFF, (byte) 0xFF, lastDataTime);
+                write(message);
+
+                ArrayList<SerializableSensor> sensorData = null;
+                ArrayList<Byte> data = new ArrayList<Byte>();
+
+                while (sensorData == null) {
 
                     bytes = inStream.read(buffer);
-                    tmp = read(buffer, bytes);
-                    if(data != null){
-                        byte[] temp = new byte[data.length+tmp.length];
-                        int len = data.length;
-                        for(int i = 0; i <data.length; i++) {
-                            temp[i] = data[i];
-                        }
-                        for(int i =0;i<tmp.length;i++)
-                              temp[len+i] = tmp[i];
-                        tmp = temp;
-                    }
-
-                }catch(NegativeArraySizeException| IOException e){
-                    Log.i("bt","Server disconnected");
-                    isRunning = false;
-                    break;
+                    data.addAll(Arrays.asList(read(buffer, bytes)));
+                    sensorData = (ArrayList<SerializableSensor>) deserialize(data);
+                    Log.i("bt","Object incomplete: "+data.size());
                 }
-
-                ArrayList<SerializableSensor> sensorData = (ArrayList<SerializableSensor>) deserialize(tmp);
+                Log.i("bt","Object complete");
                 for(int i =0 ;i< sensorData.size(); i++){
                     long time = dbSensors.addData(sensorData.get(i));
                     if(time > lastDataTime) lastDataTime = time;
@@ -99,20 +86,20 @@ public class BluetoothClient extends Thread implements Runnable{
                 dbSettings.add(new Pair(Settings.LAST_SENSOR_TIME, String.valueOf(lastDataTime)));
                 EventBus.getDefault().post(new UpdateGUIEvent(1));
 
-                data = null;
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            } catch (IOException | ClassNotFoundException e) {
-                Log.i("bt","data not complete!");
-                data = tmp;
+
             }
+        }catch(NegativeArraySizeException| IOException e){
+            Log.i("bt","Server disconnected");
+            cancel();
         }
     }
-    private byte[] read(byte[] data, int bytes){
-        byte[] rtnArr = new byte[bytes];
+    private Byte[] read(byte[] data, int bytes){
+        Byte[] rtnArr = new Byte[bytes];
         for(int i = 0;i < bytes;i++){
             rtnArr[i]=data[i];
         }
@@ -156,18 +143,36 @@ public class BluetoothClient extends Thread implements Runnable{
     }
     public byte[] getCurrentUnixTimeByte(long ago){
         long time = Instant.now().minus(ago).getMillis();
-        Log.i("bt", "time: "+time);
+        Log.i("bt", "time: " + time);
         return getUnixTimeByte(time);
     }
-    public byte[] serialize(Object obj) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ObjectOutputStream os = new ObjectOutputStream(out);
-        os.writeObject(obj);
-        return out.toByteArray();
+    public byte[] serialize(Object obj){
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ObjectOutputStream os = new ObjectOutputStream(out);
+            os.writeObject(obj);
+            return out.toByteArray();
+        }catch (IOException e){
+            return null;
+        }
+
     }
-    public Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream in = new ByteArrayInputStream(data);
-        ObjectInputStream is = new ObjectInputStream(in);
-        return is.readObject();
+    public Object deserialize(byte[] data){
+        try {
+            ByteArrayInputStream in = new ByteArrayInputStream(data);
+            ObjectInputStream is = new ObjectInputStream(in);
+            return is.readObject();
+
+        }catch (IOException | ClassNotFoundException  e){
+            return null;
+        }
+    }
+    public Object deserialize(List<Byte> data){
+        final int n = data.size();
+        byte ret[] = new byte[n];
+        for (int i = 0; i < n; i++) {
+            ret[i] = data.get(i);
+        }
+        return deserialize(ret);
     }
 }

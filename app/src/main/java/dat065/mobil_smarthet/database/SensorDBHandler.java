@@ -100,6 +100,15 @@ public class SensorDBHandler extends DBHandler {
         }
         return 0.0;
     }
+    public Double getMeanLastHour(Sensors sensor){
+        long time = DateTime.now().minusHours(1).getMillis();
+        HashMap<Long,Double> data = getCompData(sensor, time);
+        Double rtn = 0.0;
+        for(Long d : data.keySet()){
+            rtn+=data.get(d);
+        }
+        return rtn/data.size();
+    }
     private HashMap<DateTime,Double> intToDateTime(HashMap<Long,Double> data){
         HashMap<DateTime,Double> newData =  new HashMap<DateTime,Double>();
         for(long d:data.keySet()){

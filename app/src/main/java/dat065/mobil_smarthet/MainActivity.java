@@ -88,7 +88,6 @@ public class MainActivity extends AppCompatActivity
         viewPager.setAdapter(sectionsAdapter);
         viewPager.addOnPageChangeListener(pageChangeListener);
 
-
         btStatus = false;
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -225,8 +224,10 @@ public class MainActivity extends AppCompatActivity
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(mReceiver, filter);
         Log.i("bt", "Searching for server");
-        //if(!bluetoothAdapter.isEnabled())
-        bluetoothAdapter.enable();
+        if(!bluetoothAdapter.isEnabled()) {
+            bluetoothAdapter.enable();
+            Log.i("bt", "Bluetooth on");
+        }
         bluetoothAdapter.startDiscovery();
     }
 

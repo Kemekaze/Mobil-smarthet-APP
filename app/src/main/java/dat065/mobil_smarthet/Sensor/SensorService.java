@@ -123,8 +123,8 @@ public class SensorService extends Service{
             else s = preset.getSensors()[i];
             SensorEvent se;
             if (s != null) {
-                Double val = dbSensor.getMostRelevantData(s);
-                se = new SensorEvent(s, favoriteSensors[i], Helpers.round(val, 2));
+                Double val = Helpers.round(dbSensor.getMostRelevantData(s),2);
+                se = new SensorEvent(s, favoriteSensors[i], val);
             } else {
                 se = new SensorEvent(favoriteSensors[i], "Unset");
             }
