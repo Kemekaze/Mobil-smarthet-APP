@@ -181,28 +181,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onPageScrollStateChanged(int state) {}
     };
-	
-    public boolean isBluetoothEnabled() {
 
-        if (bluetoothAdapter == null) {
-            return false;
-        }
-        return bluetoothAdapter.isEnabled();
-    }
-
-    /**
-     * Actives bluetooth.
-     */
-    public void activateBluetooth() {
-        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        registerReceiver(mReceiver, filter);
-        Log.i("bt", "Searching for server");
-        if(!bluetoothAdapter.isEnabled()) {
-            bluetoothAdapter.enable();
-            Log.i("bt", "Bluetooth on");
-        }
-        bluetoothAdapter.startDiscovery();
-    }
     /**
      * Handles event clicks of the alarm button located at the home screen.
      * When called, it starts a new AlarmActivity

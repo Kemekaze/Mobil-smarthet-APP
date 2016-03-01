@@ -42,9 +42,9 @@ public class SectionsAdapter extends FragmentPagerAdapter {
             case 0:
                 return Presets.FAVOURITES.getKey();
             case 1:
-                return Presets.SLEEP.getKey();
-            case 2:
                 return Presets.WORK.getKey();
+            case 2:
+                return Presets.SLEEP.getKey();
         }
         return null;
     }

@@ -80,6 +80,7 @@ public class BluetoothClient extends Thread implements Runnable{
                 }
                 Log.i("bt","Object complete");
                 for(int i =0 ;i< sensorData.size(); i++){
+                    new Thread();
                     long time = dbSensors.addData(sensorData.get(i));
                     if(time > lastDataTime) lastDataTime = time;
                 }
