@@ -79,13 +79,14 @@ public class BluetoothClient extends Thread implements Runnable{
                     Log.i("bt","Object incomplete: "+data.size());
                 }
                 Log.i("bt","Object complete");
+                long oldTime = lastDataTime;
                 for(int i =0 ;i< sensorData.size(); i++){
                     new Thread();
                     long time = dbSensors.addData(sensorData.get(i));
                     if(time > lastDataTime) lastDataTime = time;
                 }
                 dbSettings.add(new Pair(Settings.LAST_SENSOR_TIME, String.valueOf(lastDataTime)));
-                EventBus.getDefault().post(new UpdateGUIEvent(1));
+                EventBus.getDefault().post(new UpdateGUIEvent(1,oldTime));
 
                 try {
                     Thread.sleep(5000);

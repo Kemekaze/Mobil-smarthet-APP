@@ -42,7 +42,7 @@ import dat065.mobil_smarthet.event.SensorEvent;
 import dat065.mobil_smarthet.event.SnackbarEvent;
 import dat065.mobil_smarthet.event.SwitchEvent;
 import dat065.mobil_smarthet.event.UpdateGUIEvent;
-import dat065.mobil_smarthet.sensor.SensorService;
+import dat065.mobil_smarthet.service.SensorService;
 
 
 public class MainActivity extends AppCompatActivity
@@ -102,18 +102,6 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         //navigationView.setItemIconTintList(null);
         checkBluetooth();
-        /*Random rand = new Random();
-        HashMap<Long,Double> t = new HashMap<>();
-        for(int i = 40;i>0;i--){
-            long r = rand.nextLong(100)+1;
-            Long l = DateTime.now().minusDays(i).getMillis();
-            t.put(l,(double) r);
-        }
-        dbSensor.addData(new SerializableSensor(t,1));*/
-
-
-
-        ;
         //default switch postion
         for(Settings set: Settings.getfavourites() ){
             Sensors s = Sensors.match(dbSettings.get(set).second);
@@ -217,6 +205,7 @@ public class MainActivity extends AppCompatActivity
     public void setSwitch(SwitchEvent ev){
         Log.i("Main.setSwitch", ev.getSensor().getName() + " " + ev.getState());
         MenuItem item = navigationView.getMenu().getItem(1).getSubMenu().getItem(ev.getSensor().getId() - 1);
+        Log.i("main","item: "+item.getTitle());
         if(!ev.getState()) {
             item.setIcon(R.drawable.switch_on);
         }else {

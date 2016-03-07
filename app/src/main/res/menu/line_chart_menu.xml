@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:title="Timescope"
+          app:showAsAction="ifRoom|withText"
+        >
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/line_chart_menu_hour"
+                    android:orderInCategory="1"
+                    app:showAsAction="never"
+                    android:title="@string/line_chart_menu_hour"
+                    android:checked="true"
+                    />
+                <item
+                    android:id="@+id/line_chart_menu_day"
+                    android:orderInCategory="1"
+                    app:showAsAction="never"
+                    android:title="@string/line_chart_menu_day"
+                    android:checked="false"
+                    />
+                <item
+                    android:id="@+id/line_chart_menu_week"
+                    android:orderInCategory="2"
+                    app:showAsAction="never"
+                    android:title="@string/line_chart_menu_week"
+                    />
+                <item
+                    android:id="@+id/line_chart_menu_month"
+                    android:orderInCategory="3"
+                    app:showAsAction="never"
+                    android:title="@string/line_chart_menu_month"
+                    />
+
+            </group>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/line_chart_menu_reset"
+        android:title="Reset"
+        app:showAsAction="ifRoom|withText">
+
+    </item>
+
+</menu>

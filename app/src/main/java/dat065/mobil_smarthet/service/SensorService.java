@@ -1,4 +1,4 @@
-package dat065.mobil_smarthet.sensor;
+package dat065.mobil_smarthet.service;
 
 import android.app.Service;
 import android.content.Intent;
@@ -10,16 +10,20 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
+
 import dat065.mobil_smarthet.constants.Presets;
 import dat065.mobil_smarthet.constants.Sensors;
 import dat065.mobil_smarthet.constants.Settings;
 import dat065.mobil_smarthet.database.SensorDBHandler;
 import dat065.mobil_smarthet.database.SettingsDBHandler;
 import dat065.mobil_smarthet.event.FavourizeEvent;
+import dat065.mobil_smarthet.event.GraphEvent;
 import dat065.mobil_smarthet.event.SensorEvent;
 import dat065.mobil_smarthet.event.SnackbarEvent;
 import dat065.mobil_smarthet.event.SwitchEvent;
 import dat065.mobil_smarthet.event.UpdateGUIEvent;
+import dat065.mobil_smarthet.event.UpdateGraphEvent;
 import dat065.mobil_smarthet.helpers.Helpers;
 
 public class SensorService extends Service{
@@ -137,9 +141,16 @@ public class SensorService extends Service{
         Log.i("changePreset","Data "+(int)ev.getData());
         dbSettings.add(new Pair<Settings, String>(Settings.PRESET, Presets.match((int)ev.getData()).getKey()));
         updateFavSensors();
+    }
+    @Subscribe(sticky = true, threadMode = ThreadMode.BACKGROUND)
+    private void updateGraphData(UpdateGraphEvent ev){
+        ArrayList[] data;
+        if(ev.hasTime())
+            data = dbSensor.getXData(ev.getSensors(),ev.getTime(),ev.getGraphType());
+        else
+            data = dbSensor.getXData(ev.getSensors(),ev.getGraphType());
 
-
-
+        EventBus.getDefault().post(new GraphEvent(data,ev.getGraphType()));
 
     }
 

@@ -7,4 +7,15 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_icon">IconActivity</string>
     <string name="title_activity_alarm">Alarm Clock</string>
+
+
+    <string name="line_chart_menu_hour">Hour</string>
+    <string name="line_chart_menu_day">Day</string>
+    <string name="line_chart_menu_week">Week</string>
+    <string name="line_chart_menu_month">Month</string>
+
+
+
+
+
 </resources>

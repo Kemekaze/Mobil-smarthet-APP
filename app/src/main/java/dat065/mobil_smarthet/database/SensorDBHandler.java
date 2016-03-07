@@ -6,8 +6,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.github.mikephil.charting.data.Entry;
+
 import org.joda.time.DateTime;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import dat065.mobil_smarthet.bluetooth.SerializableSensor;
@@ -109,16 +112,49 @@ public class SensorDBHandler extends DBHandler {
         }
         return rtn/data.size();
     }
-    private HashMap<DateTime,Double> intToDateTime(HashMap<Long,Double> data){
-        HashMap<DateTime,Double> newData =  new HashMap<DateTime,Double>();
-        for(long d:data.keySet()){
-            newData.put(new DateTime().withMillis(d),data.get(d));
+
+    public String labelFormat(DateTime date, int labelType){
+        String rtn;
+        switch (labelType){
+            //hour
+            case 0:
+                rtn = date.getMinuteOfHour()+":"+date.getSecondOfMinute();
+                break;
+            //day
+            case 1:
+                rtn = date.getHourOfDay()+":"+date.getMinuteOfHour();
+                break;
+            //week
+            case 2:
+                rtn = date.getDayOfMonth()+"-"+date.getHourOfDay();
+                break;
+            //month
+            case 3:
+                rtn = date.getMonthOfYear()+"/"+date.getDayOfMonth();
+                break;
+            default:
+                rtn = date.getDayOfMonth()+":"+date.getHourOfDay();
+                break;
+
         }
-        return newData;
+        return rtn;
     }
-    private HashMap<DateTime,Double> intToDateTime(HashMap<Long,Double> data, int limit){
-        if(limit<2) return intToDateTime(data);
-        HashMap<DateTime,Double> newData =  new HashMap<DateTime,Double>();
+    private ArrayList[] intToDateTime(HashMap<Long,Double> data, int labelType){
+        ArrayList<Entry> entries = new ArrayList<Entry>();
+        ArrayList<String> labels = new ArrayList<String>();
+        int i = 0;
+        for(long d:data.keySet()){
+            entries.add(new Entry(data.get(d).floatValue(),i));
+            DateTime date = new DateTime().withMillis(d);
+            labels.add(labelFormat(date,labelType));
+            i++;
+        }
+        return new ArrayList[]{entries,labels};
+    }
+    private ArrayList[] intToDateTime(HashMap<Long,Double> data, int labelType, int limit){
+        if(limit<2) return intToDateTime(data,labelType);
+        ArrayList<Entry> entries = new ArrayList<Entry>();
+        ArrayList<String> labels = new ArrayList<String>();
         HashMap<Long,Double> meanData = new HashMap<Long,Double>();
         int counter = 0;
         for(long timeKey:data.keySet()){
@@ -129,23 +165,61 @@ public class SensorDBHandler extends DBHandler {
                 for (long meanKey : meanData.keySet()) {
                     val += meanData.get(meanKey);
                 }
-                newData.put(new DateTime().withMillis(timeKey),val/limit);
+                entries.add(new Entry(data.get(timeKey).floatValue(),counter/limit));
+                DateTime date = new DateTime().withMillis(timeKey);
+                labels.add(labelFormat(date, labelType));
                 meanData.clear();
             }
         }
-        return newData;
-    }
-    public HashMap<DateTime,Double> getWeeklyData(Sensors sensor){
-        long time = DateTime.now().minusDays(7).getMillis();
-        return intToDateTime(getCompData(sensor, time));
+        return new ArrayList[]{entries,labels};
     }
 
-    public HashMap<DateTime,Double> getMonthlyData(Sensors sensor){
+    private ArrayList[] limitPoints(Sensors sensor,long time, int type){
+        HashMap<Long,Double> data = getCompData(sensor, time);
+        //int limiter = 100;
+        //int limit = (data.size()-(data.size())%limiter)/limiter;
+        int limit = 1;
+        return intToDateTime(data,type,limit);
+    }
+    public ArrayList[] getHourlyData(Sensors sensor){
+        long time = DateTime.now().minusHours(1).getMillis();
+        return limitPoints(sensor, time, 0);
+    }
+    public ArrayList[] getDailyData(Sensors sensor){
+        long time = DateTime.now().minusDays(1).getMillis();
+        return limitPoints(sensor, time, 1);
+    }
+    public ArrayList[] getWeeklyData(Sensors sensor){
+        long time = DateTime.now().minusWeeks(1).getMillis();
+        return limitPoints(sensor, time, 2);
+    }
+    public ArrayList[] getMonthlyData(Sensors sensor){
         long time = DateTime.now().minusMonths(1).getMillis();
-        HashMap<Long,Double> data = getCompData(sensor, (int) time);
-        int limiter = 100;
-        int limit = (data.size()-(data.size())%limiter)/limiter;
-        Log.i("db","Size: "+data.size()+" limit: "+limit);
-        return intToDateTime(getCompData(sensor, (int) time),limit);
+        return limitPoints(sensor,time,3);
+    }
+    public ArrayList[] getXData(Sensors sensor,long time,int type){
+        return limitPoints(sensor,time,type);
+    }
+    public ArrayList[] getXData(Sensors sensor,int type){
+        long time;
+        switch (type){
+            case 0:
+                time = DateTime.now().minusHours(1).getMillis();
+                break;
+            case 1:
+                time = DateTime.now().minusDays(1).getMillis();
+                break;
+            case 2:
+                time = DateTime.now().minusWeeks(1).getMillis();
+                break;
+            case 3:
+                time = DateTime.now().minusMonths(1).getMillis();
+                break;
+            default:
+                time = DateTime.now().minusWeeks(1).getMillis();
+                break;
+
+        }
+        return limitPoints(sensor,time,type);
     }
 }
